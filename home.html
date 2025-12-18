@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<!--
+  ============================================
+  SISTEMA DE ASISTENCIA - HOME.HTML
+  Versión: V1.01
+  Descripción: Interfaz web responsive del sistema
+  Autor: Jorge
+  Fecha: Diciembre 2025
+  ============================================
+-->
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Asistencia</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 10px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .tabs {
+      display: flex;
+      background: #f5f5f5;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      background: #f5f5f5;
+      border: none;
+      font-size: 16px;
+      font-weight: 500;
+      color: #666;
+      transition: all 0.3s;
+    }
+
+    .tab:hover {
+      background: #e0e0e0;
+    }
+
+    .tab.active {
+      background: white;
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+    }
+
+    .btn-success:hover {
+      box-shadow: 0 6px 12px rgba(17, 153, 142, 0.4);
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      box-shadow: 0 6px 12px rgba(245, 87, 108, 0.4);
+    }
+
+    .btn-info {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+    }
+
+    .btn-info:hover {
+      box-shadow: 0 6px 12px rgba(79, 172, 254, 0.4);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      font-size: 14px;
+      padding: 10px;
+      margin: 5px 0;
+    }
+
+    .text-box {
+      background: #f8f9fa;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      min-height: 60px;
+      word-wrap: break-word;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .text-box.empty {
+      color: #999;
+      font-style: italic;
+    }
+
+    .section {
+      margin: 20px 0;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .textarea {
+      width: 100%;
+      min-height: 300px;
+      padding: 15px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 14px;
+      resize: vertical;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #667eea;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .alert-info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .pendientes-list {
+      margin-top: 20px;
+    }
+
+    .pendiente-item {
+      background: #f8f9fa;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s;
+    }
+
+    .pendiente-item:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .pendiente-item input[type="checkbox"] {
+      width: 24px;
+      height: 24px;
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    .pendiente-info {
+      flex: 1;
+    }
+
+    .pendiente-fecha {
+      font-weight: 600;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .pendiente-detalles {
+      color: #666;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .pendiente-monto {
+      font-weight: 700;
+      color: #667eea;
+      font-size: 18px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+
+    .empty-state svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 20px;
+      }
+
+      .tab {
+        font-size: 14px;
+        padding: 12px 5px;
+      }
+
+      .btn {
+        font-size: 14px;
+        padding: 12px;
+      }
+
+      .text-box {
+        font-size: 14px;
+      }
+
+      .pendiente-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .pendiente-item input[type="checkbox"] {
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📋 Sistema de Asistencia</h1>
+      <p>Gestiona tu registro de entrada y salida</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="cambiarTab('registro')">Registro</button>
+      <button class="tab" onclick="cambiarTab('reporte')">Reporte</button>
+      <button class="tab" onclick="cambiarTab('estado')">Estado</button>
+    </div>
+
+    <div class="content">
+      <!-- TAB REGISTRO -->
+      <div id="tab-registro" class="tab-content active">
+        <div class="section">
+          <button class="btn btn-success" onclick="registrarLlegada()">
+            ✅ Registrar Llegada
+          </button>
+          <button class="btn btn-warning" onclick="registrarSalida()">
+            🚪 Registrar Salida
+          </button>
+        </div>
+
+        <div class="section">
+          <div class="section-title">📥 Texto de Llegada</div>
+          <div id="textoLlegada" class="text-box empty">No hay registro de llegada hoy</div>
+          <button class="btn btn-secondary" onclick="copiarTexto('textoLlegada')">
+            📋 Copiar Llegada
+          </button>
+        </div>
+
+        <div class="section">
+          <div class="section-title">📤 Texto de Salida</div>
+          <div id="textoSalida" class="text-box empty">No hay registro de salida hoy</div>
+          <button class="btn btn-secondary" onclick="copiarTexto('textoSalida')">
+            📋 Copiar Salida
+          </button>
+        </div>
+
+        <div id="mensaje-registro"></div>
+      </div>
+
+      <!-- TAB REPORTE -->
+      <div id="tab-reporte" class="tab-content">
+        <div class="section">
+          <button class="btn btn-primary" onclick="generarReporte()">
+            📊 Generar Reporte
+          </button>
+          <button class="btn btn-info" onclick="descargarExcel()">
+            📥 Descargar Excel
+          </button>
+        </div>
+
+        <div class="section">
+          <div class="section-title">📄 Reporte para WhatsApp</div>
+          <textarea id="reporteTexto" class="textarea" readonly placeholder="Aquí aparecerá el reporte..."></textarea>
+          <button class="btn btn-secondary" onclick="copiarReporte()">
+            📋 Copiar Reporte
+          </button>
+        </div>
+
+        <div id="mensaje-reporte"></div>
+      </div>
+
+      <!-- TAB ESTADO -->
+      <div id="tab-estado" class="tab-content">
+        <div class="section">
+          <div class="section-title">💰 Registros Pendientes de Pago</div>
+          <button class="btn btn-primary" onclick="cargarPendientes()">
+            🔄 Actualizar Lista
+          </button>
+        </div>
+
+        <div id="pendientes-container">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Cargando registros...</p>
+          </div>
+        </div>
+
+        <div id="btn-guardar-container" style="display: none;">
+          <button class="btn btn-success" onclick="guardarEstados()">
+            💾 Guardar Estados
+          </button>
+        </div>
+
+        <div id="mensaje-estado"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========================================
+    // GESTIÓN DE TABS
+    // ========================================
+    function cambiarTab(tabId) {
+      // Ocultar todos los contenidos
+      const contents = document.querySelectorAll('.tab-content');
+      contents.forEach(content => content.classList.remove('active'));
+
+      // Desactivar todas las tabs
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(tab => tab.classList.remove('active'));
+
+      // Activar tab seleccionada
+      document.getElementById('tab-' + tabId).classList.add('active');
+      event.target.classList.add('active');
+
+      // Cargar datos según la tab
+      if (tabId === 'registro') {
+        cargarRegistroHoy();
+      } else if (tabId === 'estado') {
+        cargarPendientes();
+      }
+    }
+
+    // ========================================
+    // FUNCIONES DE REGISTRO
+    // ========================================
+    function registrarLlegada() {
+      mostrarMensaje('mensaje-registro', 'Registrando llegada...', 'info');
+      
+      google.script.run
+        .withSuccessHandler(function(resultado) {
+          if (resultado.success) {
+            document.getElementById('textoLlegada').textContent = resultado.texto;
+            document.getElementById('textoLlegada').classList.remove('empty');
+            mostrarMensaje('mensaje-registro', '✅ ' + resultado.mensaje, 'success');
+          } else {
+            mostrarMensaje('mensaje-registro', '⚠️ ' + resultado.mensaje, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          mostrarMensaje('mensaje-registro', '❌ No se pudo conectar con el servidor. Verifica tu conexión a internet.', 'error');
+          console.error('Error detallado:', error);
+        })
+        .registrarLlegada();
+    }
+
+    function registrarSalida() {
+      mostrarMensaje('mensaje-registro', 'Registrando salida...', 'info');
+      
+      google.script.run
+        .withSuccessHandler(function(resultado) {
+          if (resultado.success) {
+            document.getElementById('textoSalida').textContent = resultado.texto;
+            document.getElementById('textoSalida').classList.remove('empty');
+            mostrarMensaje('mensaje-registro', '✅ ' + resultado.mensaje, 'success');
+          } else {
+            mostrarMensaje('mensaje-registro', '⚠️ ' + resultado.mensaje, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          mostrarMensaje('mensaje-registro', '❌ No se pudo conectar con el servidor. Verifica tu conexión a internet.', 'error');
+          console.error('Error detallado:', error);
+        })
+        .registrarSalida();
+    }
+
+    function cargarRegistroHoy() {
+      google.script.run
+        .withSuccessHandler(function(resultado) {
+          if (resultado.success) {
+            const textoLlegadaEl = document.getElementById('textoLlegada');
+            const textoSalidaEl = document.getElementById('textoSalida');
+
+            if (resultado.textoLlegada) {
+              textoLlegadaEl.textContent = resultado.textoLlegada;
+              textoLlegadaEl.classList.remove('empty');
+            } else {
+              textoLlegadaEl.textContent = 'No hay registro de llegada hoy';
+              textoLlegadaEl.classList.add('empty');
+            }
+
+            if (resultado.textoSalida) {
+              textoSalidaEl.textContent = resultado.textoSalida;
+              textoSalidaEl.classList.remove('empty');
+            } else {
+              textoSalidaEl.textContent = 'No hay registro de salida hoy';
+              textoSalidaEl.classList.add('empty');
+            }
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error al cargar registro del día:', error);
+          mostrarMensaje('mensaje-registro', '⚠️ No se pudo cargar el registro. Recarga la página.', 'error');
+        })
+        .obtenerRegistroHoy();
+    }
+
+    function copiarTexto(elementId) {
+      const elemento = document.getElementById(elementId);
+      const texto = elemento.textContent;
+
+      if (elemento.classList.contains('empty')) {
+        mostrarMensaje('mensaje-registro', '⚠️ No hay texto disponible para copiar', 'error');
+        return;
+      }
+
+      navigator.clipboard.writeText(texto).then(function() {
+        mostrarMensaje('mensaje-registro', '✅ Texto copiado al portapapeles exitosamente', 'success');
+      }, function(err) {
+        mostrarMensaje('mensaje-registro', '❌ No se pudo copiar. Intenta seleccionar y copiar manualmente.', 'error');
+        console.error('Error al copiar:', err);
+      });
+    }
+
+    // ========================================
+    // FUNCIONES DE REPORTE
+    // ========================================
+    function generarReporte() {
+      mostrarMensaje('mensaje-reporte', 'Generando reporte...', 'info');
+      document.getElementById('reporteTexto').value = '';
+
+      google.script.run
+        .withSuccessHandler(function(resultado) {
+          if (resultado.success) {
+            document.getElementById('reporteTexto').value = resultado.reporte;
+            mostrarMensaje('mensaje-reporte', '✅ Reporte generado correctamente', 'success');
+          } else {
+            mostrarMensaje('mensaje-reporte', '⚠️ ' + resultado.mensaje, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          mostrarMensaje('mensaje-reporte', '❌ No se pudo generar el reporte. Verifica tu conexión.', 'error');
+          console.error('Error detallado:', error);
+        })
+        .generarReporte();
+    }
+
+    function copiarReporte() {
+      const reporte = document.getElementById('reporteTexto').value;
+      
+      if (!reporte) {
+        mostrarMensaje('mensaje-reporte', '⚠️ No hay reporte disponible para copiar. Genera el reporte primero.', 'error');
+        return;
+      }
+
+      navigator.clipboard.writeText(reporte).then(function() {
+        mostrarMensaje('mensaje-reporte', '✅ Reporte copiado al portapapeles exitosamente', 'success');
+      }, function(err) {
+        mostrarMensaje('mensaje-reporte', '❌ No se pudo copiar. Intenta seleccionar y copiar manualmente.', 'error');
+        console.error('Error al copiar:', err);
+      });
+    }
+
+    function descargarExcel() {
+      mostrarMensaje('mensaje-reporte', 'Generando archivo Excel...', 'info');
+
+      google.script.run
+        .withSuccessHandler(function(resultado) {
+          if (resultado.success) {
+            mostrarMensaje('mensaje-reporte', '✅ Excel generado. Abriendo en nueva pestaña...', 'success');
+            window.open(resultado.url, '_blank');
+          } else {
+            mostrarMensaje('mensaje-reporte', '⚠️ ' + resultado.mensaje, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          mostrarMensaje('mensaje-reporte', '❌ No se pudo generar el archivo Excel. Intenta nuevamente.', 'error');
+          console.error('Error detallado:', error);
+        })
+        .generarExcel();
+    }
+
+    // ========================================
+    // FUNCIONES DE ESTADO
+    // ========================================
+    function cargarPendientes() {
+      const container = document.getElementById('pendientes-container');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando registros...</p></div>';
+      document.getElementById('btn-guardar-container').style.display = 'none';
+
+      google.script.run
+        .withSuccessHandler(function(resultado) {
+          if (resultado.success) {
+            mostrarPendientes(resultado.pendientes);
+          } else {
+            container.innerHTML = '<div class="alert alert-error">⚠️ ' + resultado.mensaje + '</div>';
+          }
+        })
+        .withFailureHandler(function(error) {
+          container.innerHTML = '<div class="alert alert-error">❌ No se pudo cargar la lista. Verifica tu conexión e intenta nuevamente.</div>';
+          console.error('Error detallado:', error);
+        })
+        .obtenerRegistrosPendientes();
+    }
+
+    function mostrarPendientes(pendientes) {
+      const container = document.getElementById('pendientes-container');
+      
+      if (pendientes.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M9 11l3 3L22 4"></path>
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+            </svg>
+            <h3>¡Todo al día!</h3>
+            <p>No hay registros pendientes de pago</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '<div class="pendientes-list">';
+      
+      pendientes.forEach(function(item) {
+        html += `
+          <div class="pendiente-item">
+            <input type="checkbox" class="pendiente-check" data-fecha="${item.fecha}">
+            <div class="pendiente-info">
+              <div class="pendiente-fecha">${item.fechaCompleta}</div>
+              <div class="pendiente-detalles">${item.horasTrabajadas} horas trabajadas</div>
+            </div>
+            <div class="pendiente-monto">S/${item.monto}</div>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      container.innerHTML = html;
+      document.getElementById('btn-guardar-container').style.display = 'block';
+    }
+
+    function guardarEstados() {
+      const checkboxes = document.querySelectorAll('.pendiente-check:checked');
+      
+      if (checkboxes.length === 0) {
+        mostrarMensaje('mensaje-estado', '⚠️ Debes seleccionar al menos un registro para marcar como pagado', 'error');
+        return;
+      }
+
+      const fechas = Array.from(checkboxes).map(cb => cb.dataset.fecha);
+      
+      mostrarMensaje('mensaje-estado', 'Guardando estados...', 'info');
+
+      google.script.run
+        .withSuccessHandler(function(resultado) {
+          if (resultado.success) {
+            mostrarMensaje('mensaje-estado', '✅ ' + resultado.mensaje, 'success');
+            setTimeout(function() {
+              cargarPendientes();
+            }, 1000);
+          } else {
+            mostrarMensaje('mensaje-estado', '⚠️ ' + resultado.mensaje, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          mostrarMensaje('mensaje-estado', '❌ No se pudieron guardar los estados. Intenta nuevamente.', 'error');
+          console.error('Error detallado:', error);
+        })
+        .marcarComoPagado(fechas);
+    }
+
+    // ========================================
+    // FUNCIONES AUXILIARES
+    // ========================================
+    function mostrarMensaje(containerId, mensaje, tipo) {
+      const container = document.getElementById(containerId);
+      const claseAlerta = tipo === 'success' ? 'alert-success' : tipo === 'error' ? 'alert-error' : 'alert-info';
+      
+      container.innerHTML = `<div class="alert ${claseAlerta}">${mensaje}</div>`;
+      
+      if (tipo !== 'info') {
+        setTimeout(function() {
+          container.innerHTML = '';
+        }, 5000);
+      }
+    }
+
+    // ========================================
+    // INICIALIZACIÓN
+    // ========================================
+    window.onload = function() {
+      cargarRegistroHoy();
+    };
+  </script>
+</body>
+</html>
