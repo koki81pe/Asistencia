@@ -2,10 +2,11 @@
 <!--
   ============================================
   SISTEMA DE ASISTENCIA - HOME.HTML
-  Versión: V1.01
+  Versión: V1.02
   Descripción: Interfaz web responsive del sistema
   Autor: Jorge
   Fecha: Diciembre 2025
+  Changelog V1.02: Agregado total pendiente en pestaña Estado
   ============================================
 -->
 <html>
@@ -309,6 +310,30 @@
       opacity: 0.3;
     }
 
+    .total-pendiente {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .total-pendiente-label {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .total-pendiente-monto {
+      font-size: 32px;
+      font-weight: 700;
+      margin-top: 5px;
+    }
+
     @media (max-width: 480px) {
       .header h1 {
         font-size: 20px;
@@ -412,6 +437,13 @@
           <button class="btn btn-primary" onclick="cargarPendientes()">
             🔄 Actualizar Lista
           </button>
+        </div>
+
+        <div id="total-pendiente-container" style="display: none;">
+          <div class="total-pendiente">
+            <div class="total-pendiente-label">Total Pendiente</div>
+            <div class="total-pendiente-monto" id="total-pendiente-monto">S/0.00</div>
+          </div>
         </div>
 
         <div id="pendientes-container">
@@ -611,13 +643,15 @@
     // ========================================
     function cargarPendientes() {
       const container = document.getElementById('pendientes-container');
+      const totalContainer = document.getElementById('total-pendiente-container');
       container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando registros...</p></div>';
       document.getElementById('btn-guardar-container').style.display = 'none';
+      totalContainer.style.display = 'none';
 
       google.script.run
         .withSuccessHandler(function(resultado) {
           if (resultado.success) {
-            mostrarPendientes(resultado.pendientes);
+            mostrarPendientes(resultado.pendientes, resultado.totalPendiente);
           } else {
             container.innerHTML = '<div class="alert alert-error">⚠️ ' + resultado.mensaje + '</div>';
           }
@@ -629,8 +663,10 @@
         .obtenerRegistrosPendientes();
     }
 
-    function mostrarPendientes(pendientes) {
+    function mostrarPendientes(pendientes, totalPendiente) {
       const container = document.getElementById('pendientes-container');
+      const totalContainer = document.getElementById('total-pendiente-container');
+      const totalMonto = document.getElementById('total-pendiente-monto');
       
       if (pendientes.length === 0) {
         container.innerHTML = `
@@ -643,8 +679,13 @@
             <p>No hay registros pendientes de pago</p>
           </div>
         `;
+        totalContainer.style.display = 'none';
         return;
       }
+
+      // Mostrar total pendiente
+      totalMonto.textContent = 'S/' + totalPendiente;
+      totalContainer.style.display = 'block';
 
       let html = '<div class="pendientes-list">';
       
