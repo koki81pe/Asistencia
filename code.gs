@@ -1,12 +1,6 @@
 /**
- * ============================================
- * SISTEMA DE ASISTENCIA - CODE.GS
- * Versión: V1.02
- * Descripción: Backend del sistema de registro de asistencia
- * Autor: Jorge
- * Fecha: Diciembre 2025
- * Changelog V1.02: Agregado cálculo de total pendiente en pestaña Estado
- * ============================================
+ * Sistema de Asistencia - Code.gs V1.09
+ * Fecha: 19/12/2025 - 01:25
  */
 
 // ========================================
@@ -28,7 +22,6 @@ function registrarLlegada() {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
     const sheetRegistro = ss.getSheetByName('Registro');
-    const sheetTarifa = ss.getSheetByName('Tarifa');
     
     const ahora = new Date();
     const fecha = Utilities.formatDate(ahora, Session.getScriptTimeZone(), 'dd/MM/yyyy');
@@ -56,8 +49,8 @@ function registrarLlegada() {
       sheetRegistro.getRange(filaExistente, 2).setValue(hora); // Columna B
       sheetRegistro.getRange(filaExistente, 4).setValue(textoLlegada); // Columna D
     } else {
-      // Crear nuevo registro
-      sheetRegistro.appendRow([fecha, hora, '', textoLlegada, '']);
+      // Crear nuevo registro (A a H)
+      sheetRegistro.appendRow([fecha, hora, '', textoLlegada, '', '', '', '']);
     }
     
     return {
@@ -78,6 +71,7 @@ function registrarSalida() {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
     const sheetRegistro = ss.getSheetByName('Registro');
+    const sheetTarifa = ss.getSheetByName('Tarifa');
     
     const ahora = new Date();
     const fecha = Utilities.formatDate(ahora, Session.getScriptTimeZone(), 'dd/MM/yyyy');
@@ -97,17 +91,48 @@ function registrarSalida() {
       }
     }
     
-    // Generar texto de salida
-    const textoSalida = generarTextoSalida(ahora);
-    
-    if (filaExistente > 0) {
-      sheetRegistro.getRange(filaExistente, 3).setValue(hora); // Columna C
-      sheetRegistro.getRange(filaExistente, 5).setValue(textoSalida); // Columna E
-    } else {
+    if (filaExistente <= 0) {
       return {
         success: false,
         mensaje: 'No hay registro de llegada para hoy'
       };
+    }
+    
+    // Generar texto de salida
+    const textoSalida = generarTextoSalida(ahora);
+    
+    // Registrar salida y texto
+    sheetRegistro.getRange(filaExistente, 3).setValue(hora); // Columna C
+    sheetRegistro.getRange(filaExistente, 5).setValue(textoSalida); // Columna E
+    
+    // Calcular Horas y Monto solo si hay hora de llegada válida
+    const horaLlegada = datos[filaExistente - 1][1]; // Columna B
+    
+    if (horaLlegada) {
+      try {
+        // Calcular horas trabajadas (sin redondear aún)
+        const horasTrabajadas = calcularHorasTrabajadas(horaLlegada, hora);
+        
+        // Obtener tarifas
+        const tarifaHora = sheetTarifa.getRange('A2').getValue();
+        const tarifaPasaje = sheetTarifa.getRange('B2').getValue();
+        
+        // Calcular monto con horas completas (sin redondear) y redondear solo el monto final
+        const monto = (horasTrabajadas * tarifaHora) + tarifaPasaje;
+        
+        // Guardar en columnas F y G como NÚMEROS
+        const cellHoras = sheetRegistro.getRange(filaExistente, 6);
+        cellHoras.setValue(parseFloat(horasTrabajadas.toFixed(2)));
+        cellHoras.setNumberFormat('0.00'); // Formato numérico con 2 decimales
+        
+        const cellMonto = sheetRegistro.getRange(filaExistente, 7);
+        cellMonto.setValue(parseFloat(monto.toFixed(2))); // Redondear solo el monto final
+        cellMonto.setNumberFormat('0.00'); // Formato numérico con 2 decimales
+        
+      } catch (error) {
+        Logger.log('Error al calcular horas/monto: ' + error.message);
+        // Continuar sin calcular si hay error
+      }
     }
     
     return {
@@ -169,25 +194,9 @@ function generarReporte() {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
     const sheetRegistro = ss.getSheetByName('Registro');
-    const sheetTarifa = ss.getSheetByName('Tarifa');
-    const sheetEstado = ss.getSheetByName('Estado');
-    
-    // Obtener tarifas
-    const tarifaHora = sheetTarifa.getRange('A2').getValue();
-    const tarifaPasaje = sheetTarifa.getRange('B2').getValue();
     
     // Obtener todos los registros
     const datos = sheetRegistro.getDataRange().getValues();
-    const datosEstado = sheetEstado.getDataRange().getValues();
-    
-    // Crear mapa de estados
-    const mapaEstados = {};
-    for (let i = 1; i < datosEstado.length; i++) {
-      if (datosEstado[i][0]) {
-        const fechaEstado = Utilities.formatDate(new Date(datosEstado[i][0]), Session.getScriptTimeZone(), 'dd/MM/yyyy');
-        mapaEstados[fechaEstado] = datosEstado[i][1];
-      }
-    }
     
     // Procesar registros por semana
     const semanas = {};
@@ -197,18 +206,28 @@ function generarReporte() {
       if (datos[i][0] && datos[i][1] && datos[i][2]) {
         const fecha = new Date(datos[i][0]);
         const fechaStr = Utilities.formatDate(fecha, Session.getScriptTimeZone(), 'dd/MM/yyyy');
+        const estado = datos[i][7]; // Columna H
         
         // Verificar si ya está pagado
-        if (mapaEstados[fechaStr] === 'Pagado') {
+        if (estado === 'Pagado') {
           continue;
         }
         
         const horaLlegada = datos[i][1];
         const horaSalida = datos[i][2];
         
-        // Calcular horas trabajadas
-        const horasTrabajadas = calcularHorasTrabajadas(horaLlegada, horaSalida);
-        const monto = (horasTrabajadas * tarifaHora) + tarifaPasaje;
+        // Intentar leer monto de la columna G, si no existe calcularlo
+        let monto;
+        if (datos[i][6]) {
+          monto = parseFloat(datos[i][6]);
+        } else {
+          // Calcular si no existe
+          const sheetTarifa = ss.getSheetByName('Tarifa');
+          const tarifaHora = sheetTarifa.getRange('A2').getValue();
+          const tarifaPasaje = sheetTarifa.getRange('B2').getValue();
+          const horasTrabajadas = calcularHorasTrabajadas(horaLlegada, horaSalida);
+          monto = (horasTrabajadas * tarifaHora) + tarifaPasaje;
+        }
         
         // Obtener semana
         const inicioSemana = obtenerInicioSemana(fecha);
@@ -278,117 +297,140 @@ function generarExcel() {
     const ss = SpreadsheetApp.openById(SHEET_ID);
     const sheetRegistro = ss.getSheetByName('Registro');
     const sheetTarifa = ss.getSheetByName('Tarifa');
-    const sheetEstado = ss.getSheetByName('Estado');
     
     // Crear nuevo spreadsheet temporal
     const nuevoSS = SpreadsheetApp.create('Reporte_Asistencia_' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd'));
     const sheet = nuevoSS.getActiveSheet();
     sheet.setName('Reporte');
     
-    // Obtener tarifas
+    // Obtener tarifas para referencia
     const tarifaHora = sheetTarifa.getRange('A2').getValue();
     const tarifaPasaje = sheetTarifa.getRange('B2').getValue();
     
     // Obtener registros
     const datos = sheetRegistro.getDataRange().getValues();
-    const datosEstado = sheetEstado.getDataRange().getValues();
-    
-    // Crear mapa de estados
-    const mapaEstados = {};
-    for (let i = 1; i < datosEstado.length; i++) {
-      if (datosEstado[i][0]) {
-        const fechaEstado = Utilities.formatDate(new Date(datosEstado[i][0]), Session.getScriptTimeZone(), 'dd/MM/yyyy');
-        mapaEstados[fechaEstado] = datosEstado[i][1];
-      }
-    }
     
     // Encabezados
-    sheet.getRange('A1:G1').setValues([['Semana', 'Fecha', 'Día', 'Llegada', 'Salida', 'Horas', 'Monto']]);
-    sheet.getRange('A1:G1').setFontWeight('bold');
-    sheet.getRange('A1:G1').setBackground('#4285f4');
-    sheet.getRange('A1:G1').setFontColor('#ffffff');
+    sheet.getRange('A1:F1').setValues([['Fecha', 'Día', 'Llegada', 'Salida', 'Horas', 'Monto']]);
+    sheet.getRange('A1:F1').setFontWeight('bold');
+    sheet.getRange('A1:F1').setBackground('#4285f4');
+    sheet.getRange('A1:F1').setFontColor('#ffffff');
+    sheet.getRange('A1:F1').setHorizontalAlignment('center');
     
     let fila = 2;
-    let totalGeneral = 0;
+    let semanaAnterior = null;
     
-    // Procesar por semanas
-    const semanas = {};
+    // Procesar registros
+    const registros = [];
     
     for (let i = 1; i < datos.length; i++) {
       if (datos[i][0] && datos[i][1] && datos[i][2]) {
         const fecha = new Date(datos[i][0]);
-        const fechaStr = Utilities.formatDate(fecha, Session.getScriptTimeZone(), 'dd/MM/yyyy');
+        const estado = datos[i][7]; // Columna H
         
-        // Verificar si ya está pagado
-        if (mapaEstados[fechaStr] === 'Pagado') {
+        // Solo registros NO pagados
+        if (estado === 'Pagado') {
           continue;
         }
         
         const horaLlegada = datos[i][1];
         const horaSalida = datos[i][2];
         
-        // Calcular horas trabajadas
-        const horasTrabajadas = calcularHorasTrabajadas(horaLlegada, horaSalida);
-        const monto = (horasTrabajadas * tarifaHora) + tarifaPasaje;
-        
-        // Obtener semana
+        // Obtener semana para agrupar
         const inicioSemana = obtenerInicioSemana(fecha);
-        const finSemana = obtenerFinSemana(fecha);
-        const claveEsemana = Utilities.formatDate(inicioSemana, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+        const semanaKey = Utilities.formatDate(inicioSemana, Session.getScriptTimeZone(), 'yyyy-MM-dd');
         
-        if (!semanas[claveEsemana]) {
-          semanas[claveEsemana] = {
-            inicio: inicioSemana,
-            fin: finSemana,
-            dias: []
-          };
-        }
-        
-        semanas[claveEsemana].dias.push({
+        registros.push({
           fecha: fecha,
           horaLlegada: horaLlegada,
           horaSalida: horaSalida,
-          horasTrabajadas: horasTrabajadas,
-          monto: monto
+          semanaKey: semanaKey
         });
       }
     }
     
-    // Escribir datos
-    const semanasOrdenadas = Object.keys(semanas).sort();
+    // Ordenar por fecha
+    registros.sort((a, b) => a.fecha - b.fecha);
     
-    for (const claveSemana of semanasOrdenadas) {
-      const semana = semanas[claveSemana];
-      const semanaStr = `${formatearFechaSemana(semana.inicio)} a ${formatearFechaSemana(semana.fin)}`;
-      
-      for (const dia of semana.dias) {
-        const fechaStr = Utilities.formatDate(dia.fecha, Session.getScriptTimeZone(), 'dd/MM/yyyy');
-        const diaStr = obtenerNombreDia(dia.fecha);
-        const llegadaStr = typeof dia.horaLlegada === 'string' ? dia.horaLlegada : Utilities.formatDate(new Date(dia.horaLlegada), Session.getScriptTimeZone(), 'HH:mm');
-        const salidaStr = typeof dia.horaSalida === 'string' ? dia.horaSalida : Utilities.formatDate(new Date(dia.horaSalida), Session.getScriptTimeZone(), 'HH:mm');
-        
-        sheet.getRange(fila, 1).setValue(semanaStr);
-        sheet.getRange(fila, 2).setValue(fechaStr);
-        sheet.getRange(fila, 3).setValue(diaStr);
-        sheet.getRange(fila, 4).setValue(llegadaStr);
-        sheet.getRange(fila, 5).setValue(salidaStr);
-        sheet.getRange(fila, 6).setValue(dia.horasTrabajadas.toFixed(2));
-        sheet.getRange(fila, 7).setValue(dia.monto.toFixed(2));
-        
-        totalGeneral += dia.monto;
-        fila++;
+    // Escribir datos con fórmulas
+    for (const registro of registros) {
+      // Detectar cambio de semana para agregar divisor
+      if (semanaAnterior !== null && registro.semanaKey !== semanaAnterior) {
+        // Agregar borde superior grueso para separar semanas
+        sheet.getRange(fila, 1, 1, 6).setBorder(true, null, null, null, null, null, '#000000', SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
       }
+      semanaAnterior = registro.semanaKey;
+      
+      // Columna A: Fecha (valor Date, formato DD/MM)
+      const cellFecha = sheet.getRange(fila, 1);
+      cellFecha.setValue(registro.fecha);
+      cellFecha.setNumberFormat('dd/mm');
+      cellFecha.setHorizontalAlignment('center');
+      
+      // Columna B: Día (texto)
+      const diaStr = obtenerNombreDia(registro.fecha);
+      sheet.getRange(fila, 2).setValue(diaStr);
+      
+      // Columna C: Llegada (valor hora, formato HH:MM)
+      const cellLlegada = sheet.getRange(fila, 3);
+      if (typeof registro.horaLlegada === 'string') {
+        // Convertir string "HH:mm" a valor de hora para Excel
+        const [h, m] = registro.horaLlegada.split(':');
+        const valorHora = (parseInt(h) * 60 + parseInt(m)) / (24 * 60);
+        cellLlegada.setValue(valorHora);
+      } else {
+        cellLlegada.setValue(registro.horaLlegada);
+      }
+      cellLlegada.setNumberFormat('hh:mm');
+      cellLlegada.setHorizontalAlignment('center');
+      
+      // Columna D: Salida (valor hora, formato HH:MM)
+      const cellSalida = sheet.getRange(fila, 4);
+      if (typeof registro.horaSalida === 'string') {
+        const [h, m] = registro.horaSalida.split(':');
+        const valorHora = (parseInt(h) * 60 + parseInt(m)) / (24 * 60);
+        cellSalida.setValue(valorHora);
+      } else {
+        cellSalida.setValue(registro.horaSalida);
+      }
+      cellSalida.setNumberFormat('hh:mm');
+      cellSalida.setHorizontalAlignment('center');
+      
+      // Columna E: Horas (FÓRMULA)
+      const cellHoras = sheet.getRange(fila, 5);
+      cellHoras.setFormula(`=(D${fila}-C${fila})*24`);
+      cellHoras.setNumberFormat('0.00');
+      
+      // Columna F: Monto (FÓRMULA con REDONDEAR)
+      const cellMonto = sheet.getRange(fila, 6);
+      cellMonto.setFormula(`=ROUND((E${fila}*${tarifaHora})+${tarifaPasaje},2)`);
+      cellMonto.setNumberFormat('0.00');
+      
+      fila++;
     }
     
-    // Total
-    fila++;
-    sheet.getRange(fila, 6).setValue('TOTAL:');
-    sheet.getRange(fila, 7).setValue(totalGeneral.toFixed(2));
-    sheet.getRange(fila, 6, 1, 2).setFontWeight('bold');
-    sheet.getRange(fila, 6, 1, 2).setBackground('#f4b400');
+    // Fila de Total
+    if (fila > 2) {
+      fila++;
+      sheet.getRange(fila, 5).setValue('TOTAL:');
+      sheet.getRange(fila, 5).setHorizontalAlignment('right');
+      sheet.getRange(fila, 5).setFontWeight('bold');
+      
+      const cellTotal = sheet.getRange(fila, 6);
+      cellTotal.setFormula(`=SUM(F2:F${fila-2})`);
+      cellTotal.setNumberFormat('0.00');
+      cellTotal.setFontWeight('bold');
+      cellTotal.setBackground('#f4b400');
+      sheet.getRange(fila, 5).setBackground('#f4b400');
+    }
     
-    // Ajustar columnas
-    sheet.autoResizeColumns(1, 7);
+    // Ajustar ancho de columnas
+    sheet.setColumnWidth(1, 80);  // Fecha
+    sheet.setColumnWidth(2, 100); // Día
+    sheet.setColumnWidth(3, 80);  // Llegada
+    sheet.setColumnWidth(4, 80);  // Salida
+    sheet.setColumnWidth(5, 80);  // Horas
+    sheet.setColumnWidth(6, 80);  // Monto
     
     // Obtener URL del archivo
     const url = nuevoSS.getUrl();
@@ -416,22 +458,8 @@ function obtenerRegistrosPendientes() {
     const ss = SpreadsheetApp.openById(SHEET_ID);
     const sheetRegistro = ss.getSheetByName('Registro');
     const sheetTarifa = ss.getSheetByName('Tarifa');
-    const sheetEstado = ss.getSheetByName('Estado');
-    
-    const tarifaHora = sheetTarifa.getRange('A2').getValue();
-    const tarifaPasaje = sheetTarifa.getRange('B2').getValue();
     
     const datos = sheetRegistro.getDataRange().getValues();
-    const datosEstado = sheetEstado.getDataRange().getValues();
-    
-    // Crear mapa de estados
-    const mapaEstados = {};
-    for (let i = 1; i < datosEstado.length; i++) {
-      if (datosEstado[i][0]) {
-        const fechaEstado = Utilities.formatDate(new Date(datosEstado[i][0]), Session.getScriptTimeZone(), 'dd/MM/yyyy');
-        mapaEstados[fechaEstado] = datosEstado[i][1];
-      }
-    }
     
     const pendientes = [];
     let totalPendiente = 0;
@@ -440,24 +468,54 @@ function obtenerRegistrosPendientes() {
       if (datos[i][0] && datos[i][1] && datos[i][2]) {
         const fecha = new Date(datos[i][0]);
         const fechaStr = Utilities.formatDate(fecha, Session.getScriptTimeZone(), 'dd/MM/yyyy');
+        const estado = datos[i][7]; // Columna H
         
-        if (!mapaEstados[fechaStr] || mapaEstados[fechaStr] !== 'Pagado') {
+        if (!estado || estado !== 'Pagado') {
           const horaLlegada = datos[i][1];
           const horaSalida = datos[i][2];
-          const horasTrabajadas = calcularHorasTrabajadas(horaLlegada, horaSalida);
-          const monto = (horasTrabajadas * tarifaHora) + tarifaPasaje;
+          
+          // Intentar leer horas y monto de las columnas, si no existen calcular
+          let horasTrabajadas, monto;
+          
+          if (datos[i][5]) {
+            horasTrabajadas = parseFloat(datos[i][5]);
+          } else {
+            horasTrabajadas = calcularHorasTrabajadas(horaLlegada, horaSalida);
+          }
+          
+          if (datos[i][6]) {
+            monto = parseFloat(datos[i][6]);
+          } else {
+            const tarifaHora = sheetTarifa.getRange('A2').getValue();
+            const tarifaPasaje = sheetTarifa.getRange('B2').getValue();
+            monto = (horasTrabajadas * tarifaHora) + tarifaPasaje;
+          }
+          
+          // Calcular semana
+          const inicioSemana = obtenerInicioSemana(fecha);
+          const finSemana = obtenerFinSemana(fecha);
+          const semanaKey = Utilities.formatDate(inicioSemana, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+          const semanaTexto = formatearFechaSemana(inicioSemana) + ' - ' + formatearFechaSemana(finSemana);
           
           pendientes.push({
             fecha: fechaStr,
             fechaCompleta: obtenerFechaCompleta(fecha),
             horasTrabajadas: horasTrabajadas.toFixed(2),
-            monto: monto.toFixed(2)
+            monto: monto.toFixed(2),
+            semanaKey: semanaKey,
+            semanaTexto: semanaTexto,
+            fechaObj: Utilities.formatDate(fecha, Session.getScriptTimeZone(), 'yyyy-MM-dd')
           });
           
           totalPendiente += monto;
         }
       }
     }
+    
+    // Ordenar por fecha
+    pendientes.sort((a, b) => {
+      return a.fechaObj.localeCompare(b.fechaObj);
+    });
     
     return {
       success: true,
@@ -476,36 +534,33 @@ function obtenerRegistrosPendientes() {
 function marcarComoPagado(fechas) {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
-    const sheetEstado = ss.getSheetByName('Estado');
+    const sheetRegistro = ss.getSheetByName('Registro');
     
     // Obtener datos actuales
-    const datos = sheetEstado.getDataRange().getValues();
-    const mapaEstados = {};
+    const datos = sheetRegistro.getDataRange().getValues();
     
+    // Crear mapa de filas por fecha
+    const mapaFilas = {};
     for (let i = 1; i < datos.length; i++) {
       if (datos[i][0]) {
-        const fechaEstado = Utilities.formatDate(new Date(datos[i][0]), Session.getScriptTimeZone(), 'dd/MM/yyyy');
-        mapaEstados[fechaEstado] = i + 1; // guardar fila
+        const fechaRegistro = Utilities.formatDate(new Date(datos[i][0]), Session.getScriptTimeZone(), 'dd/MM/yyyy');
+        mapaFilas[fechaRegistro] = i + 1; // guardar número de fila
       }
     }
     
     // Procesar cada fecha
+    let actualizados = 0;
     for (const fechaStr of fechas) {
-      const [dia, mes, anio] = fechaStr.split('/');
-      const fecha = new Date(anio, mes - 1, dia);
-      
-      if (mapaEstados[fechaStr]) {
-        // Actualizar existente
-        sheetEstado.getRange(mapaEstados[fechaStr], 2).setValue('Pagado');
-      } else {
-        // Crear nuevo registro
-        sheetEstado.appendRow([fecha, 'Pagado']);
+      if (mapaFilas[fechaStr]) {
+        // Marcar como Pagado en columna H
+        sheetRegistro.getRange(mapaFilas[fechaStr], 8).setValue('Pagado');
+        actualizados++;
       }
     }
     
     return {
       success: true,
-      mensaje: 'Estados actualizados correctamente'
+      mensaje: actualizados + ' registro(s) marcado(s) como Pagado'
     };
   } catch (error) {
     Logger.log('Error en marcarComoPagado: ' + error.message);
@@ -521,7 +576,7 @@ function marcarComoPagado(fechas) {
 // ========================================
 
 function generarTextoLlegada(fecha) {
-  const dias = ['do', 'lu', 'ma', 'mi', 'ju', 've', 'sa'];
+  const dias = ['do', 'lu', 'ma', 'mi', 'ju', 'vi', 'sa'];
   const dia = dias[fecha.getDay()];
   const ddmm = Utilities.formatDate(fecha, Session.getScriptTimeZone(), 'dd/MM');
   const hhmm = Utilities.formatDate(fecha, Session.getScriptTimeZone(), 'HH:mm');
@@ -530,7 +585,7 @@ function generarTextoLlegada(fecha) {
 }
 
 function generarTextoSalida(fecha) {
-  const dias = ['do', 'lu', 'ma', 'mi', 'ju', 've', 'sa'];
+  const dias = ['do', 'lu', 'ma', 'mi', 'ju', 'vi', 'sa'];
   const dia = dias[fecha.getDay()];
   const ddmm = Utilities.formatDate(fecha, Session.getScriptTimeZone(), 'dd/MM');
   const hhmm = Utilities.formatDate(fecha, Session.getScriptTimeZone(), 'HH:mm');
@@ -610,7 +665,8 @@ function obtenerFechaCompleta(fecha) {
 function testTotal() {
   Logger.clear();
   Logger.log('═══════════════════════════════════════════════════════');
-  Logger.log('INICIO DE PRUEBAS - SISTEMA DE ASISTENCIA V1.02');
+  Logger.log('INICIO DE PRUEBAS - SISTEMA DE ASISTENCIA');
+  Logger.log('Fecha: 19/12/2025 - 00:17');
   Logger.log('═══════════════════════════════════════════════════════\n');
   
   let totalPruebas = 0;
@@ -638,7 +694,7 @@ function testTotal() {
   totalPruebas++;
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
-    const hojas = ['Registro', 'Tarifa', 'Estado'];
+    const hojas = ['Registro', 'Tarifa'];
     let hojasEncontradas = 0;
     
     for (const nombreHoja of hojas) {
@@ -848,4 +904,207 @@ function testTotal() {
   }
   
   Logger.log('\n📌 Revisa los logs completos en: Ver > Registros (Ctrl/Cmd + Enter)');
+}
+
+// ========================================
+// MENÚ PERSONALIZADO
+// ========================================
+
+/**
+ * Menú personalizado al abrir el Spreadsheet
+ */
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('⚙️ Actualizar')
+    .addItem('🔄 Actualizar campos faltantes', 'refreshTextos')
+    .addSeparator()
+    .addItem('📊 Ejecutar todas las pruebas', 'testTotal')
+    .addToUi();
+}
+
+// ========================================
+// FUNCIONES ADMINISTRATIVAS
+// ========================================
+
+/**
+ * Completa TextoLlegada (D), TextoSalida (E), Horas (F) y Monto (G)
+ * solo si están vacíos y existen los datos base.
+ * 
+ * Uso: Cuando llenas manualmente fechas y horas en el Sheet
+ * y necesitas generar los textos y cálculos automáticamente.
+ */
+function refreshTextos() {
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const sheet = ss.getSheetByName('Registro');
+    const sheetTarifa = ss.getSheetByName('Tarifa');
+    const data = sheet.getDataRange().getValues();
+
+    let cambios = 0;
+    let errores = 0;
+
+    for (let i = 1; i < data.length; i++) {
+      const fechaOriginal = data[i][0];  // A
+      const llegada = data[i][1];        // B
+      const salida = data[i][2];         // C
+      let textoLlegada = data[i][3];     // D
+      let textoSalida = data[i][4];      // E
+      let horas = data[i][5];            // F
+      let monto = data[i][6];            // G
+
+      // Saltar si no hay fecha
+      if (!fechaOriginal) continue;
+
+      // Convertir fecha a objeto Date válido
+      let fechaObj;
+      if (fechaOriginal instanceof Date) {
+        fechaObj = new Date(fechaOriginal);
+      } else {
+        // Si es string, intentar parsear
+        fechaObj = new Date(fechaOriginal);
+      }
+      
+      // Verificar que la fecha sea válida
+      if (isNaN(fechaObj.getTime())) {
+        Logger.log('Fila ' + (i + 1) + ': Fecha inválida - ' + fechaOriginal);
+        errores++;
+        continue;
+      }
+
+      // Texto llegada
+      if (!textoLlegada && llegada) {
+        try {
+          // Crear fecha completa para llegada
+          const fechaLlegada = new Date(fechaObj);
+          
+          // Extraer hora y minutos de llegada
+          let horaLlegada, minutoLlegada;
+          if (typeof llegada === 'string') {
+            const partes = llegada.split(':');
+            if (partes.length >= 2) {
+              horaLlegada = parseInt(partes[0]);
+              minutoLlegada = parseInt(partes[1]);
+            } else {
+              throw new Error('Formato de hora inválido');
+            }
+          } else if (llegada instanceof Date) {
+            horaLlegada = llegada.getHours();
+            minutoLlegada = llegada.getMinutes();
+          } else {
+            throw new Error('Tipo de dato no válido');
+          }
+          
+          // Validar hora y minutos
+          if (horaLlegada >= 0 && horaLlegada <= 23 && minutoLlegada >= 0 && minutoLlegada <= 59) {
+            fechaLlegada.setHours(horaLlegada, minutoLlegada, 0, 0);
+            
+            const textoGenerado = generarTextoLlegada(fechaLlegada);
+            sheet.getRange(i + 1, 4).setValue(textoGenerado);
+            cambios++;
+          } else {
+            throw new Error('Hora fuera de rango');
+          }
+        } catch (error) {
+          Logger.log('Fila ' + (i + 1) + ': Error en llegada - ' + error.message);
+          errores++;
+        }
+      }
+
+      // Texto salida
+      if (!textoSalida && salida) {
+        try {
+          // Crear fecha completa para salida
+          const fechaSalida = new Date(fechaObj);
+          
+          // Extraer hora y minutos de salida
+          let horaSalida, minutoSalida;
+          if (typeof salida === 'string') {
+            const partes = salida.split(':');
+            if (partes.length >= 2) {
+              horaSalida = parseInt(partes[0]);
+              minutoSalida = parseInt(partes[1]);
+            } else {
+              throw new Error('Formato de hora inválido');
+            }
+          } else if (salida instanceof Date) {
+            horaSalida = salida.getHours();
+            minutoSalida = salida.getMinutes();
+          } else {
+            throw new Error('Tipo de dato no válido');
+          }
+          
+          // Validar hora y minutos
+          if (horaSalida >= 0 && horaSalida <= 23 && minutoSalida >= 0 && minutoSalida <= 59) {
+            fechaSalida.setHours(horaSalida, minutoSalida, 0, 0);
+            
+            const textoGenerado = generarTextoSalida(fechaSalida);
+            sheet.getRange(i + 1, 5).setValue(textoGenerado);
+            cambios++;
+          } else {
+            throw new Error('Hora fuera de rango');
+          }
+        } catch (error) {
+          Logger.log('Fila ' + (i + 1) + ': Error en salida - ' + error.message);
+          errores++;
+        }
+      }
+      
+      // Calcular Horas y Monto si están vacíos y hay llegada y salida
+      if (llegada && salida) {
+        try {
+          // Horas trabajadas
+          if (!horas) {
+            const horasTrabajadas = calcularHorasTrabajadas(llegada, salida);
+            const cellHoras = sheet.getRange(i + 1, 6);
+            cellHoras.setValue(parseFloat(horasTrabajadas.toFixed(2)));
+            cellHoras.setNumberFormat('0.00'); // Formato numérico con 2 decimales
+            cambios++;
+          }
+          
+          // Monto - calcular con horas completas (sin redondear primero)
+          if (!monto) {
+            const tarifaHora = sheetTarifa.getRange('A2').getValue();
+            const tarifaPasaje = sheetTarifa.getRange('B2').getValue();
+            
+            // Usar horas SIN redondear para el cálculo
+            const horasParaCalculo = horas || calcularHorasTrabajadas(llegada, salida);
+            const montoCalculado = (horasParaCalculo * tarifaHora) + tarifaPasaje;
+            
+            const cellMonto = sheet.getRange(i + 1, 7);
+            cellMonto.setValue(parseFloat(montoCalculado.toFixed(2))); // Redondear solo el monto final
+            cellMonto.setNumberFormat('0.00'); // Formato numérico con 2 decimales
+            cambios++;
+          }
+        } catch (error) {
+          Logger.log('Fila ' + (i + 1) + ': Error en cálculos - ' + error.message);
+          errores++;
+        }
+      }
+    }
+
+    // Mensaje final
+    let mensaje = '✅ Actualización completada\n\n';
+    mensaje += '📝 Campos actualizados: ' + cambios;
+    
+    if (errores > 0) {
+      mensaje += '\n⚠️ Errores encontrados: ' + errores;
+      mensaje += '\n\nRevisa los registros (Ver > Registros) para más detalles.';
+    }
+    
+    SpreadsheetApp.getUi().alert('Actualizar Datos', mensaje, SpreadsheetApp.getUi().ButtonSet.OK);
+    
+    Logger.log('refreshTextos completado: ' + cambios + ' campos actualizados, ' + errores + ' errores');
+    
+  } catch (error) {
+    Logger.log('Error en refreshTextos: ' + error.message);
+    SpreadsheetApp.getUi().alert(
+      'Error al actualizar',
+      '❌ Error al actualizar datos.\n\n' + 
+      'Verifica que las columnas tengan el formato correcto:\n' +
+      '• Columna A: Fecha (formato fecha)\n' +
+      '• Columnas B y C: Hora en formato texto "HH:mm" (ejemplo: "15:30")\n\n' +
+      'Revisa los registros (Ver > Registros) para más detalles.',
+      SpreadsheetApp.getUi().ButtonSet.OK
+    );
+  }
 }
