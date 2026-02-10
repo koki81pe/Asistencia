@@ -1,872 +1,960 @@
-<!DOCTYPE html>
+<!-- MOD-001: ENCABEZADO [INICIO] -->
 <!--
-  Sistema de Asistencia - home.html V1.07
-  Fecha: 19/12/2025 - 01:15
+*****************************************
+PROYECTO: Sistema de Asistencia
+ARCHIVO: home.html
+VERSIÓN: 01.08
+FECHA: 10/02/2026 10:45 (UTC-5)
+*****************************************
 -->
+<!-- MOD-001: FIN -->
+
+<!-- MOD-002: DOCTYPE Y HEAD [INICIO] -->
+<!DOCTYPE html>
 <html>
 <head>
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Asistencia</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<!-- MOD-002: FIN -->
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 10px;
-    }
+<!-- MOD-003: ESTILOS [INICIO] -->
+<style>
+/* MOD-003-001: Reset y Body [INICIO] */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      overflow: hidden;
-    }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 10px;
+}
+/* MOD-003-001: FIN */
 
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
+/* MOD-003-002: Container y Header [INICIO] */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
 
-    .header h1 {
-      font-size: 24px;
-      margin-bottom: 5px;
-    }
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
 
-    .header p {
-      font-size: 14px;
-      opacity: 0.9;
-    }
+.header h1 {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
 
-    .tabs {
-      display: flex;
-      background: #f5f5f5;
-      border-bottom: 2px solid #ddd;
-    }
+.header p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+/* MOD-003-002: FIN */
 
-    .tab {
-      flex: 1;
-      padding: 15px;
-      text-align: center;
-      cursor: pointer;
-      background: #f5f5f5;
-      border: none;
-      font-size: 16px;
-      font-weight: 500;
-      color: #666;
-      transition: all 0.3s;
-    }
+/* MOD-003-003: Tabs [INICIO] */
+.tabs {
+  display: flex;
+  background: #f5f5f5;
+  border-bottom: 2px solid #ddd;
+}
 
-    .tab:hover {
-      background: #e0e0e0;
-    }
+.tab {
+  flex: 1;
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+  background: #f5f5f5;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s;
+}
 
-    .tab.active {
-      background: white;
-      color: #667eea;
-      border-bottom: 3px solid #667eea;
-    }
+.tab:hover {
+  background: #e0e0e0;
+}
 
-    .content {
-      padding: 20px;
-    }
+.tab.active {
+  background: white;
+  color: #667eea;
+  border-bottom: 3px solid #667eea;
+}
+/* MOD-003-003: FIN */
 
-    .tab-content {
-      display: none;
-    }
+/* MOD-003-004: Content y Tab Content [INICIO] */
+.content {
+  padding: 20px;
+}
 
-    .tab-content.active {
-      display: block;
-      animation: fadeIn 0.3s;
-    }
+.tab-content {
+  display: none;
+}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.3s;
+}
 
-    .btn {
-      width: 100%;
-      padding: 15px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* MOD-003-004: FIN */
 
-    .btn:active {
-      transform: scale(0.98);
-    }
+/* MOD-003-005: Botones [INICIO] */
+.btn {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
+.btn:active {
+  transform: scale(0.98);
+}
 
-    .btn-primary:hover {
-      box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
-    }
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
 
-    .btn-success {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-      color: white;
-    }
+.btn-primary:hover {
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+}
 
-    .btn-success:hover {
-      box-shadow: 0 6px 12px rgba(17, 153, 142, 0.4);
-    }
+.btn-success {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+}
 
-    .btn-warning {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      color: white;
-    }
+.btn-success:hover {
+  box-shadow: 0 6px 12px rgba(17, 153, 142, 0.4);
+}
 
-    .btn-warning:hover {
-      box-shadow: 0 6px 12px rgba(245, 87, 108, 0.4);
-    }
+.btn-warning {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
 
-    .btn-info {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      color: white;
-    }
+.btn-warning:hover {
+  box-shadow: 0 6px 12px rgba(245, 87, 108, 0.4);
+}
 
-    .btn-info:hover {
-      box-shadow: 0 6px 12px rgba(79, 172, 254, 0.4);
-    }
+.btn-info {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+}
 
-    .btn-secondary {
-      background: #6c757d;
-      color: white;
-      font-size: 14px;
-      padding: 10px;
-      margin: 5px 0;
-    }
+.btn-info:hover {
+  box-shadow: 0 6px 12px rgba(79, 172, 254, 0.4);
+}
 
-    .text-box {
-      background: #f8f9fa;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 10px 0;
-      min-height: 60px;
-      word-wrap: break-word;
-      font-size: 16px;
-      color: #333;
-    }
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+  font-size: 14px;
+  padding: 10px;
+  margin: 5px 0;
+}
+/* MOD-003-005: FIN */
 
-    .text-box.empty {
-      color: #999;
-      font-style: italic;
-    }
+/* MOD-003-006: Text Box y Section [INICIO] */
+.text-box {
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 10px 0;
+  min-height: 60px;
+  word-wrap: break-word;
+  font-size: 16px;
+  color: #333;
+}
 
-    .section {
-      margin: 20px 0;
-    }
+.text-box.empty {
+  color: #999;
+  font-style: italic;
+}
 
-    .section-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #667eea;
-      margin-bottom: 10px;
-    }
+.section {
+  margin: 20px 0;
+}
 
-    .textarea {
-      width: 100%;
-      min-height: 300px;
-      padding: 15px;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      font-family: monospace;
-      font-size: 14px;
-      resize: vertical;
-    }
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #667eea;
+  margin-bottom: 10px;
+}
 
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #667eea;
-    }
+.textarea {
+  width: 100%;
+  min-height: 300px;
+  padding: 15px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 14px;
+  resize: vertical;
+}
+/* MOD-003-006: FIN */
 
-    .spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #667eea;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto;
-    }
+/* MOD-003-007: Loading y Spinner [INICIO] */
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #667eea;
+}
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
 
-    .alert {
-      padding: 12px;
-      border-radius: 8px;
-      margin: 10px 0;
-      font-size: 14px;
-    }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/* MOD-003-007: FIN */
 
-    .alert-success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
+/* MOD-003-008: Alertas [INICIO] */
+.alert {
+  padding: 12px;
+  border-radius: 8px;
+  margin: 10px 0;
+  font-size: 14px;
+}
 
-    .alert-error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
+.alert-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
 
-    .alert-info {
-      background: #d1ecf1;
-      color: #0c5460;
-      border: 1px solid #bee5eb;
-    }
+.alert-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
 
-    .pendientes-list {
-      margin-top: 20px;
-    }
+.alert-info {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+/* MOD-003-008: FIN */
 
-    .pendiente-item {
-      background: #f8f9fa;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 10px 0;
-      display: flex;
-      align-items: center;
-      transition: all 0.3s;
-    }
+/* MOD-003-009: Pendientes List [INICIO] */
+.pendientes-list {
+  margin-top: 20px;
+}
 
-    .pendiente-item:hover {
-      border-color: #667eea;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+.pendiente-item {
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s;
+}
 
-    .pendiente-item input[type="checkbox"] {
-      width: 24px;
-      height: 24px;
-      margin-right: 15px;
-      cursor: pointer;
-    }
+.pendiente-item:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-    .pendiente-info {
-      flex: 1;
-    }
+.pendiente-item input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  margin-right: 15px;
+  cursor: pointer;
+}
 
-    .pendiente-fecha {
-      font-weight: 600;
-      color: #333;
-      font-size: 16px;
-    }
+.pendiente-info {
+  flex: 1;
+}
 
-    .pendiente-detalles {
-      color: #666;
-      font-size: 14px;
-      margin-top: 5px;
-    }
+.pendiente-fecha {
+  font-weight: 600;
+  color: #333;
+  font-size: 16px;
+}
 
-    .pendiente-monto {
-      font-weight: 700;
-      color: #667eea;
-      font-size: 18px;
-    }
+.pendiente-detalles {
+  color: #666;
+  font-size: 14px;
+  margin-top: 5px;
+}
 
-    .separador-semana {
-      background: #fff9c4;
-      border: 2px solid #f9e79f;
-      border-radius: 8px;
-      padding: 12px 15px;
-      margin: 20px 0 10px 0;
-      text-align: center;
-      font-weight: 600;
-      color: #666;
-      font-size: 15px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
+.pendiente-monto {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 18px;
+}
+/* MOD-003-009: FIN */
 
-    .separador-semana:first-child {
-      margin-top: 10px;
-    }
+/* MOD-003-010: Separador Semana [INICIO] */
+.separador-semana {
+  background: #fff9c4;
+  border: 2px solid #f9e79f;
+  border-radius: 8px;
+  padding: 12px 15px;
+  margin: 20px 0 10px 0;
+  text-align: center;
+  font-weight: 600;
+  color: #666;
+  font-size: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
 
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #999;
-    }
+.separador-semana:first-child {
+  margin-top: 10px;
+}
+/* MOD-003-010: FIN */
 
-    .empty-state svg {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 20px;
-      opacity: 0.3;
-    }
+/* MOD-003-011: Empty State [INICIO] */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
 
-    .total-pendiente {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin: 20px 0;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    }
+.empty-state svg {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+  opacity: 0.3;
+}
+/* MOD-003-011: FIN */
 
-    .total-pendiente-label {
-      font-size: 14px;
-      opacity: 0.9;
-      margin-bottom: 5px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+/* MOD-003-012: Totales [INICIO] */
+.total-pendiente {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
 
-    .total-pendiente-monto {
-      font-size: 32px;
-      font-weight: 700;
-      margin-top: 5px;
-    }
+.total-pendiente-label {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
-    .total-seleccionado {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-      color: white;
-      padding: 15px;
-      border-radius: 10px;
-      margin: 15px 0;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
-    }
+.total-pendiente-monto {
+  font-size: 32px;
+  font-weight: 700;
+  margin-top: 5px;
+}
 
-    .total-seleccionado-label {
-      font-size: 12px;
-      opacity: 0.9;
-      margin-bottom: 3px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+.total-seleccionado {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 15px 0;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+}
 
-    .total-seleccionado-monto {
-      font-size: 24px;
-      font-weight: 700;
-      margin-top: 3px;
-    }
+.total-seleccionado-label {
+  font-size: 12px;
+  opacity: 0.9;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
-    @media (max-width: 480px) {
-      .header h1 {
-        font-size: 20px;
-      }
+.total-seleccionado-monto {
+  font-size: 24px;
+  font-weight: 700;
+  margin-top: 3px;
+}
+/* MOD-003-012: FIN */
 
-      .tab {
-        font-size: 14px;
-        padding: 12px 5px;
-      }
+/* MOD-003-013: Media Queries [INICIO] */
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 20px;
+  }
 
-      .btn {
-        font-size: 14px;
-        padding: 12px;
-      }
+  .tab {
+    font-size: 14px;
+    padding: 12px 5px;
+  }
 
-      .text-box {
-        font-size: 14px;
-      }
+  .btn {
+    font-size: 14px;
+    padding: 12px;
+  }
 
-      .pendiente-item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+  .text-box {
+    font-size: 14px;
+  }
 
-      .pendiente-item input[type="checkbox"] {
-        margin-bottom: 10px;
-      }
-    }
-  </style>
+  .pendiente-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pendiente-item input[type="checkbox"] {
+    margin-bottom: 10px;
+  }
+}
+/* MOD-003-013: FIN */
+</style>
+<!-- MOD-003: FIN -->
+
+<!-- MOD-004: CIERRE HEAD Y BODY [INICIO] -->
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>📋 Sistema de Asistencia</h1>
-      <p>Gestiona tu registro de entrada y salida</p>
-    </div>
+<!-- MOD-004: FIN -->
 
-    <div class="tabs">
-      <button class="tab active" onclick="cambiarTab('registro')">Registro</button>
-      <button class="tab" onclick="cambiarTab('reporte')">Reporte</button>
-      <button class="tab" onclick="cambiarTab('pendiente')">Pendiente</button>
-    </div>
+<!-- MOD-005: CONTAINER Y HEADER [INICIO] -->
+<div class="container">
+  <div class="header">
+    <h1>📋 Sistema de Asistencia</h1>
+    <p>Gestiona tu registro de entrada y salida</p>
+  </div>
+<!-- MOD-005: FIN -->
 
-    <div class="content">
-      <!-- TAB REGISTRO -->
-      <div id="tab-registro" class="tab-content active">
-        <div class="section">
-          <button class="btn btn-success" onclick="registrarLlegada()">
-            ✅ Registrar Llegada
-          </button>
-          <button class="btn btn-warning" onclick="registrarSalida()">
-            🚪 Registrar Salida
-          </button>
-        </div>
+<!-- MOD-006: TABS [INICIO] -->
+<div class="tabs">
+  <button class="tab active" onclick="cambiarTab('registro')">Registro</button>
+  <button class="tab" onclick="cambiarTab('reporte')">Reporte</button>
+  <button class="tab" onclick="cambiarTab('pendiente')">Pendiente</button>
+</div>
+<!-- MOD-006: FIN -->
 
-        <div class="section">
-          <div class="section-title">📥 Texto de Llegada</div>
-          <div id="textoLlegada" class="text-box empty">No hay registro de llegada hoy</div>
-          <button class="btn btn-secondary" onclick="copiarTexto('textoLlegada')">
-            📋 Copiar Llegada
-          </button>
-        </div>
+<!-- MOD-007: CONTENT [INICIO] -->
+<div class="content">
+<!-- MOD-007: FIN -->
 
-        <div class="section">
-          <div class="section-title">📤 Texto de Salida</div>
-          <div id="textoSalida" class="text-box empty">No hay registro de salida hoy</div>
-          <button class="btn btn-secondary" onclick="copiarTexto('textoSalida')">
-            📋 Copiar Salida
-          </button>
-        </div>
+<!-- MOD-008: TAB REGISTRO [INICIO] -->
+<div id="tab-registro" class="tab-content active">
+  <div class="section">
+    <button class="btn btn-success" onclick="registrarLlegada()">
+      ✅ Registrar Llegada
+    </button>
+    <button class="btn btn-warning" onclick="registrarSalida()">
+      🚪 Registrar Salida
+    </button>
+  </div>
 
-        <div id="mensaje-registro"></div>
-      </div>
+  <div class="section">
+    <div class="section-title">📥 Texto de Llegada</div>
+    <div id="textoLlegada" class="text-box empty">No hay registro de llegada hoy</div>
+    <button class="btn btn-secondary" onclick="copiarTexto('textoLlegada')">
+      📋 Copiar Llegada
+    </button>
+  </div>
 
-      <!-- TAB REPORTE -->
-      <div id="tab-reporte" class="tab-content">
-        <div class="section">
-          <button class="btn btn-primary" onclick="generarReporte()">
-            📊 Generar Reporte
-          </button>
-          <button class="btn btn-info" onclick="descargarExcel()">
-            📥 Descargar Excel
-          </button>
-        </div>
+  <div class="section">
+    <div class="section-title">📤 Texto de Salida</div>
+    <div id="textoSalida" class="text-box empty">No hay registro de salida hoy</div>
+    <button class="btn btn-secondary" onclick="copiarTexto('textoSalida')">
+      📋 Copiar Salida
+    </button>
+  </div>
 
-        <div class="section">
-          <div class="section-title">📄 Reporte para WhatsApp</div>
-          <textarea id="reporteTexto" class="textarea" readonly placeholder="Aquí aparecerá el reporte..."></textarea>
-          <button class="btn btn-secondary" onclick="copiarReporte()">
-            📋 Copiar Reporte
-          </button>
-        </div>
+  <div id="mensaje-registro"></div>
+</div>
+<!-- MOD-008: FIN -->
 
-        <div id="mensaje-reporte"></div>
-      </div>
+<!-- MOD-009: TAB REPORTE [INICIO] -->
+<div id="tab-reporte" class="tab-content">
+  <div class="section">
+    <button class="btn btn-primary" onclick="generarReporte()">
+      📊 Generar Reporte
+    </button>
+    <button class="btn btn-info" onclick="descargarExcel()">
+      📥 Descargar Excel
+    </button>
+  </div>
 
-      <!-- TAB PENDIENTE -->
-      <div id="tab-pendiente" class="tab-content">
-        <div class="section">
-          <div class="section-title">💰 Registros Pendientes de Pago</div>
-          <button class="btn btn-primary" onclick="cargarPendientes()">
-            🔄 Actualizar Lista
-          </button>
-          <button class="btn btn-secondary" onclick="marcarTodos()" style="margin-top: 5px;">
-            ☑️ Marcar/Desmarcar Todos
-          </button>
-        </div>
+  <div class="section">
+    <div class="section-title">📄 Reporte para WhatsApp</div>
+    <textarea id="reporteTexto" class="textarea" readonly placeholder="Aquí aparecerá el reporte..."></textarea>
+    <button class="btn btn-secondary" onclick="copiarReporte()">
+      📋 Copiar Reporte
+    </button>
+  </div>
 
-        <div id="total-pendiente-container" style="display: none;">
-          <div class="total-pendiente">
-            <div class="total-pendiente-label">Total Pendiente</div>
-            <div class="total-pendiente-monto" id="total-pendiente-monto">S/0.00</div>
-          </div>
-        </div>
+  <div id="mensaje-reporte"></div>
+</div>
+<!-- MOD-009: FIN -->
 
-        <div id="total-seleccionado-container" style="display: none;">
-          <div class="total-seleccionado">
-            <div class="total-seleccionado-label">Total Seleccionado</div>
-            <div class="total-seleccionado-monto" id="total-seleccionado-monto">S/0.00</div>
-          </div>
-        </div>
+<!-- MOD-010: TAB PENDIENTE [INICIO] -->
+<div id="tab-pendiente" class="tab-content">
+  <div class="section">
+    <div class="section-title">💰 Registros Pendientes de Pago</div>
+    <button class="btn btn-primary" onclick="cargarPendientes()">
+      🔄 Actualizar Lista
+    </button>
+    <button class="btn btn-secondary" onclick="marcarTodos()" style="margin-top: 5px;">
+      ☑️ Marcar/Desmarcar Todos
+    </button>
+  </div>
 
-        <div id="pendientes-container">
-          <div class="loading">
-            <div class="spinner"></div>
-            <p>Cargando registros...</p>
-          </div>
-        </div>
-
-        <div id="btn-guardar-container" style="display: none;">
-          <button class="btn btn-success" onclick="guardarEstados()">
-            💾 Guardar Estados
-          </button>
-        </div>
-
-        <div id="mensaje-pendiente"></div>
-      </div>
+  <div id="total-pendiente-container" style="display: none;">
+    <div class="total-pendiente">
+      <div class="total-pendiente-label">Total Pendiente</div>
+      <div class="total-pendiente-monto" id="total-pendiente-monto">S/0.00</div>
     </div>
   </div>
 
-  <script>
-    // ========================================
-    // GESTIÓN DE TABS
-    // ========================================
-    function cambiarTab(tabId) {
-      // Ocultar todos los contenidos
-      const contents = document.querySelectorAll('.tab-content');
-      contents.forEach(content => content.classList.remove('active'));
+  <div id="total-seleccionado-container" style="display: none;">
+    <div class="total-seleccionado">
+      <div class="total-seleccionado-label">Total Seleccionado</div>
+      <div class="total-seleccionado-monto" id="total-seleccionado-monto">S/0.00</div>
+    </div>
+  </div>
 
-      // Desactivar todas las tabs
-      const tabs = document.querySelectorAll('.tab');
-      tabs.forEach(tab => tab.classList.remove('active'));
+  <div id="pendientes-container">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Cargando registros...</p>
+    </div>
+  </div>
 
-      // Activar tab seleccionada
-      document.getElementById('tab-' + tabId).classList.add('active');
-      event.target.classList.add('active');
+  <div id="btn-guardar-container" style="display: none;">
+    <button class="btn btn-success" onclick="guardarEstados()">
+      💾 Guardar Estados
+    </button>
+  </div>
 
-      // Cargar datos según la tab
-      if (tabId === 'registro') {
-        cargarRegistroHoy();
-      } else if (tabId === 'pendiente') {
-        cargarPendientes();
+  <div id="mensaje-pendiente"></div>
+</div>
+<!-- MOD-010: FIN -->
+
+<!-- MOD-011: CIERRE CONTENT Y CONTAINER [INICIO] -->
+</div>
+</div>
+<!-- MOD-011: FIN -->
+
+<!-- MOD-012: JAVASCRIPT [INICIO] -->
+<script>
+// MOD-012-001: Gestión de Tabs [INICIO]
+function cambiarTab(tabId) {
+  // Ocultar todos los contenidos
+  const contents = document.querySelectorAll('.tab-content');
+  contents.forEach(content => content.classList.remove('active'));
+
+  // Desactivar todas las tabs
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(tab => tab.classList.remove('active'));
+
+  // Activar tab seleccionada
+  document.getElementById('tab-' + tabId).classList.add('active');
+  event.target.classList.add('active');
+
+  // Cargar datos según la tab
+  if (tabId === 'registro') {
+    cargarRegistroHoy();
+  } else if (tabId === 'pendiente') {
+    cargarPendientes();
+  }
+}
+// MOD-012-001: FIN
+
+// MOD-012-002: Registrar Llegada [INICIO]
+function registrarLlegada() {
+  mostrarMensaje('mensaje-registro', 'Registrando llegada...', 'info');
+  
+  google.script.run
+    .withSuccessHandler(function(resultado) {
+      if (resultado.success) {
+        document.getElementById('textoLlegada').textContent = resultado.texto;
+        document.getElementById('textoLlegada').classList.remove('empty');
+        mostrarMensaje('mensaje-registro', '✅ ' + resultado.mensaje, 'success');
+      } else {
+        mostrarMensaje('mensaje-registro', '⚠️ ' + resultado.mensaje, 'error');
       }
-    }
+    })
+    .withFailureHandler(function(error) {
+      mostrarMensaje('mensaje-registro', '❌ No se pudo conectar con el servidor. Verifica tu conexión a internet.', 'error');
+      console.error('Error detallado:', error);
+    })
+    .registrarLlegada();
+}
+// MOD-012-002: FIN
 
-    // ========================================
-    // FUNCIONES DE REGISTRO
-    // ========================================
-    function registrarLlegada() {
-      mostrarMensaje('mensaje-registro', 'Registrando llegada...', 'info');
-      
-      google.script.run
-        .withSuccessHandler(function(resultado) {
-          if (resultado.success) {
-            document.getElementById('textoLlegada').textContent = resultado.texto;
-            document.getElementById('textoLlegada').classList.remove('empty');
-            mostrarMensaje('mensaje-registro', '✅ ' + resultado.mensaje, 'success');
-          } else {
-            mostrarMensaje('mensaje-registro', '⚠️ ' + resultado.mensaje, 'error');
-          }
-        })
-        .withFailureHandler(function(error) {
-          mostrarMensaje('mensaje-registro', '❌ No se pudo conectar con el servidor. Verifica tu conexión a internet.', 'error');
-          console.error('Error detallado:', error);
-        })
-        .registrarLlegada();
-    }
-
-    function registrarSalida() {
-      mostrarMensaje('mensaje-registro', 'Registrando salida...', 'info');
-      
-      google.script.run
-        .withSuccessHandler(function(resultado) {
-          if (resultado.success) {
-            document.getElementById('textoSalida').textContent = resultado.texto;
-            document.getElementById('textoSalida').classList.remove('empty');
-            mostrarMensaje('mensaje-registro', '✅ ' + resultado.mensaje, 'success');
-          } else {
-            mostrarMensaje('mensaje-registro', '⚠️ ' + resultado.mensaje, 'error');
-          }
-        })
-        .withFailureHandler(function(error) {
-          mostrarMensaje('mensaje-registro', '❌ No se pudo conectar con el servidor. Verifica tu conexión a internet.', 'error');
-          console.error('Error detallado:', error);
-        })
-        .registrarSalida();
-    }
-
-    function cargarRegistroHoy() {
-      google.script.run
-        .withSuccessHandler(function(resultado) {
-          if (resultado.success) {
-            const textoLlegadaEl = document.getElementById('textoLlegada');
-            const textoSalidaEl = document.getElementById('textoSalida');
-
-            if (resultado.textoLlegada) {
-              textoLlegadaEl.textContent = resultado.textoLlegada;
-              textoLlegadaEl.classList.remove('empty');
-            } else {
-              textoLlegadaEl.textContent = 'No hay registro de llegada hoy';
-              textoLlegadaEl.classList.add('empty');
-            }
-
-            if (resultado.textoSalida) {
-              textoSalidaEl.textContent = resultado.textoSalida;
-              textoSalidaEl.classList.remove('empty');
-            } else {
-              textoSalidaEl.textContent = 'No hay registro de salida hoy';
-              textoSalidaEl.classList.add('empty');
-            }
-          }
-        })
-        .withFailureHandler(function(error) {
-          console.error('Error al cargar registro del día:', error);
-          mostrarMensaje('mensaje-registro', '⚠️ No se pudo cargar el registro. Recarga la página.', 'error');
-        })
-        .obtenerRegistroHoy();
-    }
-
-    function copiarTexto(elementId) {
-      const elemento = document.getElementById(elementId);
-      const texto = elemento.textContent;
-
-      if (elemento.classList.contains('empty')) {
-        mostrarMensaje('mensaje-registro', '⚠️ No hay texto disponible para copiar', 'error');
-        return;
+// MOD-012-003: Registrar Salida [INICIO]
+function registrarSalida() {
+  mostrarMensaje('mensaje-registro', 'Registrando salida...', 'info');
+  
+  google.script.run
+    .withSuccessHandler(function(resultado) {
+      if (resultado.success) {
+        document.getElementById('textoSalida').textContent = resultado.texto;
+        document.getElementById('textoSalida').classList.remove('empty');
+        mostrarMensaje('mensaje-registro', '✅ ' + resultado.mensaje, 'success');
+      } else {
+        mostrarMensaje('mensaje-registro', '⚠️ ' + resultado.mensaje, 'error');
       }
+    })
+    .withFailureHandler(function(error) {
+      mostrarMensaje('mensaje-registro', '❌ No se pudo conectar con el servidor. Verifica tu conexión a internet.', 'error');
+      console.error('Error detallado:', error);
+    })
+    .registrarSalida();
+}
+// MOD-012-003: FIN
 
-      navigator.clipboard.writeText(texto).then(function() {
-        mostrarMensaje('mensaje-registro', '✅ Texto copiado al portapapeles exitosamente', 'success');
-      }, function(err) {
-        mostrarMensaje('mensaje-registro', '❌ No se pudo copiar. Intenta seleccionar y copiar manualmente.', 'error');
-        console.error('Error al copiar:', err);
-      });
-    }
+// MOD-012-004: Cargar Registro Hoy [INICIO]
+function cargarRegistroHoy() {
+  google.script.run
+    .withSuccessHandler(function(resultado) {
+      if (resultado.success) {
+        const textoLlegadaEl = document.getElementById('textoLlegada');
+        const textoSalidaEl = document.getElementById('textoSalida');
 
-    // ========================================
-    // FUNCIONES DE REPORTE
-    // ========================================
-    function generarReporte() {
-      mostrarMensaje('mensaje-reporte', 'Generando reporte...', 'info');
-      document.getElementById('reporteTexto').value = '';
-
-      google.script.run
-        .withSuccessHandler(function(resultado) {
-          if (resultado.success) {
-            document.getElementById('reporteTexto').value = resultado.reporte;
-            mostrarMensaje('mensaje-reporte', '✅ Reporte generado correctamente', 'success');
-          } else {
-            mostrarMensaje('mensaje-reporte', '⚠️ ' + resultado.mensaje, 'error');
-          }
-        })
-        .withFailureHandler(function(error) {
-          mostrarMensaje('mensaje-reporte', '❌ No se pudo generar el reporte. Verifica tu conexión.', 'error');
-          console.error('Error detallado:', error);
-        })
-        .generarReporte();
-    }
-
-    function copiarReporte() {
-      const reporte = document.getElementById('reporteTexto').value;
-      
-      if (!reporte) {
-        mostrarMensaje('mensaje-reporte', '⚠️ No hay reporte disponible para copiar. Genera el reporte primero.', 'error');
-        return;
-      }
-
-      navigator.clipboard.writeText(reporte).then(function() {
-        mostrarMensaje('mensaje-reporte', '✅ Reporte copiado al portapapeles exitosamente', 'success');
-      }, function(err) {
-        mostrarMensaje('mensaje-reporte', '❌ No se pudo copiar. Intenta seleccionar y copiar manualmente.', 'error');
-        console.error('Error al copiar:', err);
-      });
-    }
-
-    function descargarExcel() {
-      mostrarMensaje('mensaje-reporte', 'Generando archivo Excel...', 'info');
-
-      google.script.run
-        .withSuccessHandler(function(resultado) {
-          if (resultado.success) {
-            mostrarMensaje('mensaje-reporte', '✅ Excel generado. Abriendo en nueva pestaña...', 'success');
-            window.open(resultado.url, '_blank');
-          } else {
-            mostrarMensaje('mensaje-reporte', '⚠️ ' + resultado.mensaje, 'error');
-          }
-        })
-        .withFailureHandler(function(error) {
-          mostrarMensaje('mensaje-reporte', '❌ No se pudo generar el archivo Excel. Intenta nuevamente.', 'error');
-          console.error('Error detallado:', error);
-        })
-        .generarExcel();
-    }
-
-    // ========================================
-    // FUNCIONES DE ESTADO
-    // ========================================
-    function cargarPendientes() {
-      const container = document.getElementById('pendientes-container');
-      const totalContainer = document.getElementById('total-pendiente-container');
-      container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando registros...</p></div>';
-      document.getElementById('btn-guardar-container').style.display = 'none';
-      totalContainer.style.display = 'none';
-
-      google.script.run
-        .withSuccessHandler(function(resultado) {
-          if (resultado.success) {
-            mostrarPendientes(resultado.pendientes, resultado.totalPendiente);
-          } else {
-            container.innerHTML = '<div class="alert alert-error">⚠️ ' + resultado.mensaje + '</div>';
-          }
-        })
-        .withFailureHandler(function(error) {
-          container.innerHTML = '<div class="alert alert-error">❌ No se pudo cargar la lista. Verifica tu conexión e intenta nuevamente.</div>';
-          console.error('Error detallado:', error);
-        })
-        .obtenerRegistrosPendientes();
-    }
-
-    function mostrarPendientes(pendientes, totalPendiente) {
-      const container = document.getElementById('pendientes-container');
-      const totalContainer = document.getElementById('total-pendiente-container');
-      const totalMonto = document.getElementById('total-pendiente-monto');
-      const totalSeleccionadoContainer = document.getElementById('total-seleccionado-container');
-      
-      if (pendientes.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M9 11l3 3L22 4"></path>
-              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
-            </svg>
-            <h3>¡Todo al día!</h3>
-            <p>No hay registros pendientes de pago</p>
-          </div>
-        `;
-        totalContainer.style.display = 'none';
-        totalSeleccionadoContainer.style.display = 'none';
-        return;
-      }
-
-      // Mostrar total pendiente
-      totalMonto.textContent = 'S/' + totalPendiente;
-      totalContainer.style.display = 'block';
-
-      // Agrupar por semana
-      const semanas = {};
-      pendientes.forEach(function(item) {
-        if (!semanas[item.semanaKey]) {
-          semanas[item.semanaKey] = {
-            texto: item.semanaTexto,
-            items: []
-          };
+        if (resultado.textoLlegada) {
+          textoLlegadaEl.textContent = resultado.textoLlegada;
+          textoLlegadaEl.classList.remove('empty');
+        } else {
+          textoLlegadaEl.textContent = 'No hay registro de llegada hoy';
+          textoLlegadaEl.classList.add('empty');
         }
-        semanas[item.semanaKey].items.push(item);
-      });
 
-      // Generar HTML agrupado por semanas
-      let html = '<div class="pendientes-list">';
-      
-      const semanasOrdenadas = Object.keys(semanas).sort();
-      
-      semanasOrdenadas.forEach(function(semanaKey) {
-        const semana = semanas[semanaKey];
-        
-        // Separador de semana
-        html += `<div class="separador-semana">Sem: ${semana.texto}</div>`;
-        
-        // Items de la semana
-        semana.items.forEach(function(item) {
-          html += `
-            <div class="pendiente-item">
-              <input type="checkbox" class="pendiente-check" data-fecha="${item.fecha}" data-monto="${item.monto}" onchange="actualizarTotalSeleccionado()">
-              <div class="pendiente-info">
-                <div class="pendiente-fecha">${item.fechaCompleta}</div>
-                <div class="pendiente-detalles">${item.horasTrabajadas} horas trabajadas</div>
-              </div>
-              <div class="pendiente-monto">S/${item.monto}</div>
-            </div>
-          `;
-        });
-      });
-      
-      html += '</div>';
-      container.innerHTML = html;
-      document.getElementById('btn-guardar-container').style.display = 'block';
-      
-      // Inicializar total seleccionado en 0
-      totalSeleccionadoContainer.style.display = 'none';
-    }
-
-    function actualizarTotalSeleccionado() {
-      const checkboxes = document.querySelectorAll('.pendiente-check:checked');
-      const totalSeleccionadoContainer = document.getElementById('total-seleccionado-container');
-      const totalSeleccionadoMonto = document.getElementById('total-seleccionado-monto');
-      
-      if (checkboxes.length === 0) {
-        totalSeleccionadoContainer.style.display = 'none';
-        return;
+        if (resultado.textoSalida) {
+          textoSalidaEl.textContent = resultado.textoSalida;
+          textoSalidaEl.classList.remove('empty');
+        } else {
+          textoSalidaEl.textContent = 'No hay registro de salida hoy';
+          textoSalidaEl.classList.add('empty');
+        }
       }
-      
-      let total = 0;
-      checkboxes.forEach(function(cb) {
-        total += parseFloat(cb.dataset.monto);
-      });
-      
-      totalSeleccionadoMonto.textContent = 'S/' + total.toFixed(2);
-      totalSeleccionadoContainer.style.display = 'block';
-    }
+    })
+    .withFailureHandler(function(error) {
+      console.error('Error al cargar registro del día:', error);
+      mostrarMensaje('mensaje-registro', '⚠️ No se pudo cargar el registro. Recarga la página.', 'error');
+    })
+    .obtenerRegistroHoy();
+}
+// MOD-012-004: FIN
 
-    function marcarTodos() {
-      const checkboxes = document.querySelectorAll('.pendiente-check');
-      
-      if (checkboxes.length === 0) return;
-      
-      // Verificar si todos están marcados
-      const todosMarcados = Array.from(checkboxes).every(cb => cb.checked);
-      
-      // Si todos están marcados, desmarcar todos. Si no, marcar todos.
-      checkboxes.forEach(function(cb) {
-        cb.checked = !todosMarcados;
-      });
-      
-      actualizarTotalSeleccionado();
-    }
+// MOD-012-005: Copiar Texto [INICIO]
+function copiarTexto(elementId) {
+  const elemento = document.getElementById(elementId);
+  const texto = elemento.textContent;
 
-    function guardarEstados() {
-      const checkboxes = document.querySelectorAll('.pendiente-check:checked');
-      
-      if (checkboxes.length === 0) {
-        mostrarMensaje('mensaje-pendiente', '⚠️ Debes seleccionar al menos un registro para marcar como pagado', 'error');
-        return;
+  if (elemento.classList.contains('empty')) {
+    mostrarMensaje('mensaje-registro', '⚠️ No hay texto disponible para copiar', 'error');
+    return;
+  }
+
+  navigator.clipboard.writeText(texto).then(function() {
+    mostrarMensaje('mensaje-registro', '✅ Texto copiado al portapapeles exitosamente', 'success');
+  }, function(err) {
+    mostrarMensaje('mensaje-registro', '❌ No se pudo copiar. Intenta seleccionar y copiar manualmente.', 'error');
+    console.error('Error al copiar:', err);
+  });
+}
+// MOD-012-005: FIN
+
+// MOD-012-006: Generar Reporte [INICIO]
+function generarReporte() {
+  mostrarMensaje('mensaje-reporte', 'Generando reporte...', 'info');
+  document.getElementById('reporteTexto').value = '';
+
+  google.script.run
+    .withSuccessHandler(function(resultado) {
+      if (resultado.success) {
+        document.getElementById('reporteTexto').value = resultado.reporte;
+        mostrarMensaje('mensaje-reporte', '✅ Reporte generado correctamente', 'success');
+      } else {
+        mostrarMensaje('mensaje-reporte', '⚠️ ' + resultado.mensaje, 'error');
       }
+    })
+    .withFailureHandler(function(error) {
+      mostrarMensaje('mensaje-reporte', '❌ No se pudo generar el reporte. Verifica tu conexión.', 'error');
+      console.error('Error detallado:', error);
+    })
+    .generarReporte();
+}
+// MOD-012-006: FIN
 
-      const fechas = Array.from(checkboxes).map(cb => cb.dataset.fecha);
-      
-      mostrarMensaje('mensaje-pendiente', 'Guardando estados...', 'info');
+// MOD-012-007: Copiar Reporte [INICIO]
+function copiarReporte() {
+  const reporte = document.getElementById('reporteTexto').value;
+  
+  if (!reporte) {
+    mostrarMensaje('mensaje-reporte', '⚠️ No hay reporte disponible para copiar. Genera el reporte primero.', 'error');
+    return;
+  }
 
-      google.script.run
-        .withSuccessHandler(function(resultado) {
-          if (resultado.success) {
-            mostrarMensaje('mensaje-pendiente', '✅ ' + resultado.mensaje, 'success');
-            setTimeout(function() {
-              cargarPendientes();
-            }, 1000);
-          } else {
-            mostrarMensaje('mensaje-pendiente', '⚠️ ' + resultado.mensaje, 'error');
-          }
-        })
-        .withFailureHandler(function(error) {
-          mostrarMensaje('mensaje-pendiente', '❌ No se pudieron guardar los estados. Intenta nuevamente.', 'error');
-          console.error('Error detallado:', error);
-        })
-        .marcarComoPagado(fechas);
+  navigator.clipboard.writeText(reporte).then(function() {
+    mostrarMensaje('mensaje-reporte', '✅ Reporte copiado al portapapeles exitosamente', 'success');
+  }, function(err) {
+    mostrarMensaje('mensaje-reporte', '❌ No se pudo copiar. Intenta seleccionar y copiar manualmente.', 'error');
+    console.error('Error al copiar:', err);
+  });
+}
+// MOD-012-007: FIN
+
+// MOD-012-008: Descargar Excel [INICIO]
+function descargarExcel() {
+  mostrarMensaje('mensaje-reporte', 'Generando archivo Excel...', 'info');
+
+  google.script.run
+    .withSuccessHandler(function(resultado) {
+      if (resultado.success) {
+        mostrarMensaje('mensaje-reporte', '✅ Excel generado. Abriendo en nueva pestaña...', 'success');
+        window.open(resultado.url, '_blank');
+      } else {
+        mostrarMensaje('mensaje-reporte', '⚠️ ' + resultado.mensaje, 'error');
+      }
+    })
+    .withFailureHandler(function(error) {
+      mostrarMensaje('mensaje-reporte', '❌ No se pudo generar el archivo Excel. Intenta nuevamente.', 'error');
+      console.error('Error detallado:', error);
+    })
+    .generarExcel();
+}
+// MOD-012-008: FIN
+
+// MOD-012-009: Cargar Pendientes [INICIO]
+function cargarPendientes() {
+  const container = document.getElementById('pendientes-container');
+  const totalContainer = document.getElementById('total-pendiente-container');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando registros...</p></div>';
+  document.getElementById('btn-guardar-container').style.display = 'none';
+  totalContainer.style.display = 'none';
+
+  google.script.run
+    .withSuccessHandler(function(resultado) {
+      if (resultado.success) {
+        mostrarPendientes(resultado.pendientes, resultado.totalPendiente);
+      } else {
+        container.innerHTML = '<div class="alert alert-error">⚠️ ' + resultado.mensaje + '</div>';
+      }
+    })
+    .withFailureHandler(function(error) {
+      container.innerHTML = '<div class="alert alert-error">❌ No se pudo cargar la lista. Verifica tu conexión e intenta nuevamente.</div>';
+      console.error('Error detallado:', error);
+    })
+    .obtenerRegistrosPendientes();
+}
+// MOD-012-009: FIN
+
+// MOD-012-010: Mostrar Pendientes [INICIO]
+function mostrarPendientes(pendientes, totalPendiente) {
+  const container = document.getElementById('pendientes-container');
+  const totalContainer = document.getElementById('total-pendiente-container');
+  const totalMonto = document.getElementById('total-pendiente-monto');
+  const totalSeleccionadoContainer = document.getElementById('total-seleccionado-container');
+  
+  if (pendientes.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+        </svg>
+        <h3>¡Todo al día!</h3>
+        <p>No hay registros pendientes de pago</p>
+      </div>
+    `;
+    totalContainer.style.display = 'none';
+    totalSeleccionadoContainer.style.display = 'none';
+    return;
+  }
+
+  // Mostrar total pendiente
+  totalMonto.textContent = 'S/' + totalPendiente;
+  totalContainer.style.display = 'block';
+
+  // Agrupar por semana
+  const semanas = {};
+  pendientes.forEach(function(item) {
+    if (!semanas[item.semanaKey]) {
+      semanas[item.semanaKey] = {
+        texto: item.semanaTexto,
+        items: []
+      };
     }
+    semanas[item.semanaKey].items.push(item);
+  });
 
-    // ========================================
-    // FUNCIONES AUXILIARES
-    // ========================================
-    function mostrarMensaje(containerId, mensaje, tipo) {
-      const container = document.getElementById(containerId);
-      const claseAlerta = tipo === 'success' ? 'alert-success' : tipo === 'error' ? 'alert-error' : 'alert-info';
-      
-      container.innerHTML = `<div class="alert ${claseAlerta}">${mensaje}</div>`;
-      
-      if (tipo !== 'info') {
+  // Generar HTML agrupado por semanas
+  let html = '<div class="pendientes-list">';
+  
+  const semanasOrdenadas = Object.keys(semanas).sort();
+  
+  semanasOrdenadas.forEach(function(semanaKey) {
+    const semana = semanas[semanaKey];
+    
+    // Separador de semana
+    html += `<div class="separador-semana">Sem: ${semana.texto}</div>`;
+    
+    // Items de la semana
+    semana.items.forEach(function(item) {
+      html += `
+        <div class="pendiente-item">
+          <input type="checkbox" class="pendiente-check" data-fecha="${item.fecha}" data-monto="${item.monto}" onchange="actualizarTotalSeleccionado()">
+          <div class="pendiente-info">
+            <div class="pendiente-fecha">${item.fechaCompleta}</div>
+            <div class="pendiente-detalles">${item.horasTrabajadas} horas trabajadas</div>
+          </div>
+          <div class="pendiente-monto">S/${item.monto}</div>
+        </div>
+      `;
+    });
+  });
+  
+  html += '</div>';
+  container.innerHTML = html;
+  document.getElementById('btn-guardar-container').style.display = 'block';
+  
+  // Inicializar total seleccionado en 0
+  totalSeleccionadoContainer.style.display = 'none';
+}
+// MOD-012-010: FIN
+
+// MOD-012-011: Actualizar Total Seleccionado [INICIO]
+function actualizarTotalSeleccionado() {
+  const checkboxes = document.querySelectorAll('.pendiente-check:checked');
+  const totalSeleccionadoContainer = document.getElementById('total-seleccionado-container');
+  const totalSeleccionadoMonto = document.getElementById('total-seleccionado-monto');
+  
+  if (checkboxes.length === 0) {
+    totalSeleccionadoContainer.style.display = 'none';
+    return;
+  }
+  
+  let total = 0;
+  checkboxes.forEach(function(cb) {
+    total += parseFloat(cb.dataset.monto);
+  });
+  
+  totalSeleccionadoMonto.textContent = 'S/' + total.toFixed(2);
+  totalSeleccionadoContainer.style.display = 'block';
+}
+// MOD-012-011: FIN
+
+// MOD-012-012: Marcar Todos [INICIO]
+function marcarTodos() {
+  const checkboxes = document.querySelectorAll('.pendiente-check');
+  
+  if (checkboxes.length === 0) return;
+  
+  // Verificar si todos están marcados
+  const todosMarcados = Array.from(checkboxes).every(cb => cb.checked);
+  
+  // Si todos están marcados, desmarcar todos. Si no, marcar todos.
+  checkboxes.forEach(function(cb) {
+    cb.checked = !todosMarcados;
+  });
+  
+  actualizarTotalSeleccionado();
+}
+// MOD-012-012: FIN
+
+// MOD-012-013: Guardar Estados [INICIO]
+function guardarEstados() {
+  const checkboxes = document.querySelectorAll('.pendiente-check:checked');
+  
+  if (checkboxes.length === 0) {
+    mostrarMensaje('mensaje-pendiente', '⚠️ Debes seleccionar al menos un registro para marcar como pagado', 'error');
+    return;
+  }
+
+  const fechas = Array.from(checkboxes).map(cb => cb.dataset.fecha);
+  
+  mostrarMensaje('mensaje-pendiente', 'Guardando estados...', 'info');
+
+  google.script.run
+    .withSuccessHandler(function(resultado) {
+      if (resultado.success) {
+        mostrarMensaje('mensaje-pendiente', '✅ ' + resultado.mensaje, 'success');
         setTimeout(function() {
-          container.innerHTML = '';
-        }, 5000);
+          cargarPendientes();
+        }, 1000);
+      } else {
+        mostrarMensaje('mensaje-pendiente', '⚠️ ' + resultado.mensaje, 'error');
       }
-    }
+    })
+    .withFailureHandler(function(error) {
+      mostrarMensaje('mensaje-pendiente', '❌ No se pudieron guardar los estados. Intenta nuevamente.', 'error');
+      console.error('Error detallado:', error);
+    })
+    .marcarComoPagado(fechas);
+}
+// MOD-012-013: FIN
 
-    // ========================================
-    // INICIALIZACIÓN
-    // ========================================
-    window.onload = function() {
-      cargarRegistroHoy();
-    };
-  </script>
+// MOD-012-014: Mostrar Mensaje [INICIO]
+function mostrarMensaje(containerId, mensaje, tipo) {
+  const container = document.getElementById(containerId);
+  const claseAlerta = tipo === 'success' ? 'alert-success' : tipo === 'error' ? 'alert-error' : 'alert-info';
+  
+  container.innerHTML = `<div class="alert ${claseAlerta}">${mensaje}</div>`;
+  
+  if (tipo !== 'info') {
+    setTimeout(function() {
+      container.innerHTML = '';
+    }, 5000);
+  }
+}
+// MOD-012-014: FIN
+
+// MOD-012-015: Inicialización [INICIO]
+window.onload = function() {
+  cargarRegistroHoy();
+};
+// MOD-012-015: FIN
+</script>
+<!-- MOD-012: FIN -->
+
+<!-- MOD-013: CIERRE BODY Y HTML [INICIO] -->
 </body>
 </html>
+<!-- MOD-013: FIN -->
+
+<!-- MOD-099: NOTAS [INICIO] -->
+<!--
+DESCRIPCIÓN:
+Interfaz web del sistema de asistencia con tres pestañas: Registro (entrada/salida),
+Reporte (generación de texto y Excel), y Pendiente (gestión de pagos).
+
+MULTINIVEL OBLIGATORIO:
+- MOD-003: ESTILOS usa /* */ dentro de <style> (no puede usar <!-- -->)
+- MOD-012: JAVASCRIPT usa // dentro de <script> (no puede usar <!-- -->)
+
+DEPENDENCIAS:
+- MOD-012: Todas las funciones JavaScript dependen de las funciones de code.gs
+- MOD-008, MOD-009, MOD-010: Usan funciones JavaScript de MOD-012
+-->
+<!-- MOD-099: FIN -->
