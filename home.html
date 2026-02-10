@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <!--
-  ============================================
-  SISTEMA DE ASISTENCIA - HOME.HTML
-  Versión: V1.02
-  Descripción: Interfaz web responsive del sistema
-  Autor: Jorge
-  Fecha: Diciembre 2025
-  Changelog V1.02: Agregado total pendiente en pestaña Estado
-  ============================================
+  Sistema de Asistencia - home.html V1.07
+  Fecha: 19/12/2025 - 01:15
 -->
 <html>
 <head>
@@ -297,6 +291,23 @@
       font-size: 18px;
     }
 
+    .separador-semana {
+      background: #fff9c4;
+      border: 2px solid #f9e79f;
+      border-radius: 8px;
+      padding: 12px 15px;
+      margin: 20px 0 10px 0;
+      text-align: center;
+      font-weight: 600;
+      color: #666;
+      font-size: 15px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .separador-semana:first-child {
+      margin-top: 10px;
+    }
+
     .empty-state {
       text-align: center;
       padding: 40px 20px;
@@ -332,6 +343,30 @@
       font-size: 32px;
       font-weight: 700;
       margin-top: 5px;
+    }
+
+    .total-seleccionado {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 15px 0;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+    }
+
+    .total-seleccionado-label {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .total-seleccionado-monto {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 3px;
     }
 
     @media (max-width: 480px) {
@@ -374,7 +409,7 @@
     <div class="tabs">
       <button class="tab active" onclick="cambiarTab('registro')">Registro</button>
       <button class="tab" onclick="cambiarTab('reporte')">Reporte</button>
-      <button class="tab" onclick="cambiarTab('estado')">Estado</button>
+      <button class="tab" onclick="cambiarTab('pendiente')">Pendiente</button>
     </div>
 
     <div class="content">
@@ -430,12 +465,15 @@
         <div id="mensaje-reporte"></div>
       </div>
 
-      <!-- TAB ESTADO -->
-      <div id="tab-estado" class="tab-content">
+      <!-- TAB PENDIENTE -->
+      <div id="tab-pendiente" class="tab-content">
         <div class="section">
           <div class="section-title">💰 Registros Pendientes de Pago</div>
           <button class="btn btn-primary" onclick="cargarPendientes()">
             🔄 Actualizar Lista
+          </button>
+          <button class="btn btn-secondary" onclick="marcarTodos()" style="margin-top: 5px;">
+            ☑️ Marcar/Desmarcar Todos
           </button>
         </div>
 
@@ -443,6 +481,13 @@
           <div class="total-pendiente">
             <div class="total-pendiente-label">Total Pendiente</div>
             <div class="total-pendiente-monto" id="total-pendiente-monto">S/0.00</div>
+          </div>
+        </div>
+
+        <div id="total-seleccionado-container" style="display: none;">
+          <div class="total-seleccionado">
+            <div class="total-seleccionado-label">Total Seleccionado</div>
+            <div class="total-seleccionado-monto" id="total-seleccionado-monto">S/0.00</div>
           </div>
         </div>
 
@@ -459,7 +504,7 @@
           </button>
         </div>
 
-        <div id="mensaje-estado"></div>
+        <div id="mensaje-pendiente"></div>
       </div>
     </div>
   </div>
@@ -484,7 +529,7 @@
       // Cargar datos según la tab
       if (tabId === 'registro') {
         cargarRegistroHoy();
-      } else if (tabId === 'estado') {
+      } else if (tabId === 'pendiente') {
         cargarPendientes();
       }
     }
@@ -667,6 +712,7 @@
       const container = document.getElementById('pendientes-container');
       const totalContainer = document.getElementById('total-pendiente-container');
       const totalMonto = document.getElementById('total-pendiente-monto');
+      const totalSeleccionadoContainer = document.getElementById('total-seleccionado-container');
       
       if (pendientes.length === 0) {
         container.innerHTML = `
@@ -680,6 +726,7 @@
           </div>
         `;
         totalContainer.style.display = 'none';
+        totalSeleccionadoContainer.style.display = 'none';
         return;
       }
 
@@ -687,51 +734,112 @@
       totalMonto.textContent = 'S/' + totalPendiente;
       totalContainer.style.display = 'block';
 
+      // Agrupar por semana
+      const semanas = {};
+      pendientes.forEach(function(item) {
+        if (!semanas[item.semanaKey]) {
+          semanas[item.semanaKey] = {
+            texto: item.semanaTexto,
+            items: []
+          };
+        }
+        semanas[item.semanaKey].items.push(item);
+      });
+
+      // Generar HTML agrupado por semanas
       let html = '<div class="pendientes-list">';
       
-      pendientes.forEach(function(item) {
-        html += `
-          <div class="pendiente-item">
-            <input type="checkbox" class="pendiente-check" data-fecha="${item.fecha}">
-            <div class="pendiente-info">
-              <div class="pendiente-fecha">${item.fechaCompleta}</div>
-              <div class="pendiente-detalles">${item.horasTrabajadas} horas trabajadas</div>
+      const semanasOrdenadas = Object.keys(semanas).sort();
+      
+      semanasOrdenadas.forEach(function(semanaKey) {
+        const semana = semanas[semanaKey];
+        
+        // Separador de semana
+        html += `<div class="separador-semana">Sem: ${semana.texto}</div>`;
+        
+        // Items de la semana
+        semana.items.forEach(function(item) {
+          html += `
+            <div class="pendiente-item">
+              <input type="checkbox" class="pendiente-check" data-fecha="${item.fecha}" data-monto="${item.monto}" onchange="actualizarTotalSeleccionado()">
+              <div class="pendiente-info">
+                <div class="pendiente-fecha">${item.fechaCompleta}</div>
+                <div class="pendiente-detalles">${item.horasTrabajadas} horas trabajadas</div>
+              </div>
+              <div class="pendiente-monto">S/${item.monto}</div>
             </div>
-            <div class="pendiente-monto">S/${item.monto}</div>
-          </div>
-        `;
+          `;
+        });
       });
       
       html += '</div>';
       container.innerHTML = html;
       document.getElementById('btn-guardar-container').style.display = 'block';
+      
+      // Inicializar total seleccionado en 0
+      totalSeleccionadoContainer.style.display = 'none';
+    }
+
+    function actualizarTotalSeleccionado() {
+      const checkboxes = document.querySelectorAll('.pendiente-check:checked');
+      const totalSeleccionadoContainer = document.getElementById('total-seleccionado-container');
+      const totalSeleccionadoMonto = document.getElementById('total-seleccionado-monto');
+      
+      if (checkboxes.length === 0) {
+        totalSeleccionadoContainer.style.display = 'none';
+        return;
+      }
+      
+      let total = 0;
+      checkboxes.forEach(function(cb) {
+        total += parseFloat(cb.dataset.monto);
+      });
+      
+      totalSeleccionadoMonto.textContent = 'S/' + total.toFixed(2);
+      totalSeleccionadoContainer.style.display = 'block';
+    }
+
+    function marcarTodos() {
+      const checkboxes = document.querySelectorAll('.pendiente-check');
+      
+      if (checkboxes.length === 0) return;
+      
+      // Verificar si todos están marcados
+      const todosMarcados = Array.from(checkboxes).every(cb => cb.checked);
+      
+      // Si todos están marcados, desmarcar todos. Si no, marcar todos.
+      checkboxes.forEach(function(cb) {
+        cb.checked = !todosMarcados;
+      });
+      
+      actualizarTotalSeleccionado();
     }
 
     function guardarEstados() {
       const checkboxes = document.querySelectorAll('.pendiente-check:checked');
       
       if (checkboxes.length === 0) {
-        mostrarMensaje('mensaje-estado', '⚠️ Debes seleccionar al menos un registro para marcar como pagado', 'error');
+        mostrarMensaje('mensaje-pendiente', '⚠️ Debes seleccionar al menos un registro para marcar como pagado', 'error');
         return;
       }
 
       const fechas = Array.from(checkboxes).map(cb => cb.dataset.fecha);
       
-      mostrarMensaje('mensaje-estado', 'Guardando estados...', 'info');
+      mostrarMensaje('mensaje-pendiente', 'Guardando estados...', 'info');
 
       google.script.run
         .withSuccessHandler(function(resultado) {
           if (resultado.success) {
-            mostrarMensaje('mensaje-estado', '✅ ' + resultado.mensaje, 'success');
+            mostrarMensaje('mensaje-pendiente', '✅ ' + resultado.mensaje, 'success');
             setTimeout(function() {
               cargarPendientes();
             }, 1000);
           } else {
-            mostrarMensaje('mensaje-estado', '⚠️ ' + resultado.mensaje, 'error');
+            mostrarMensaje('mensaje-pendiente', '⚠️ ' + resultado.mensaje, 'error');
           }
         })
         .withFailureHandler(function(error) {
-          mostrarMensaje('mensaje-estado', '❌ No se pudieron guardar los estados. Intenta nuevamente.', 'error');
+          mostrarMensaje('mensaje-pendiente', '❌ No se pudieron guardar los estados. Intenta nuevamente.', 'error');
           console.error('Error detallado:', error);
         })
         .marcarComoPagado(fechas);
