@@ -1,11 +1,15 @@
+// MOD-001: ENCABEZADO [INICIO]
 /**
- * Sistema de Asistencia - Code.gs V1.09
- * Fecha: 19/12/2025 - 01:25
- */
+*****************************************
+PROYECTO: Sistema de Asistencia
+ARCHIVO: code.gs
+VERSIÓN: 01.00
+FECHA: 10/02/2026 15:18 (UTC-5)
+*****************************************
+*/
+// MOD-001: FIN
 
-// ========================================
-// CONFIGURACIÓN
-// ========================================
+// MOD-002: CONFIGURACIÓN [INICIO]
 const SHEET_ID = '1GI5C5djzMEFCcQEewi-MotEBggQa5VMh0ylchHjV5kM';
 
 function doGet() {
@@ -13,11 +17,9 @@ function doGet() {
     .setTitle('Sistema de Asistencia')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
+// MOD-002: FIN
 
-// ========================================
-// FUNCIONES DE REGISTRO
-// ========================================
-
+// MOD-003: REGISTRAR LLEGADA [INICIO]
 function registrarLlegada() {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
@@ -66,7 +68,9 @@ function registrarLlegada() {
     };
   }
 }
+// MOD-003: FIN
 
+// MOD-004: REGISTRAR SALIDA [INICIO]
 function registrarSalida() {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
@@ -148,7 +152,9 @@ function registrarSalida() {
     };
   }
 }
+// MOD-004: FIN
 
+// MOD-005: OBTENER REGISTRO HOY [INICIO]
 function obtenerRegistroHoy() {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
@@ -185,11 +191,9 @@ function obtenerRegistroHoy() {
     };
   }
 }
+// MOD-005: FIN
 
-// ========================================
-// FUNCIONES DE REPORTE
-// ========================================
-
+// MOD-006: GENERAR REPORTE [INICIO]
 function generarReporte() {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
@@ -291,7 +295,9 @@ function generarReporte() {
     };
   }
 }
+// MOD-006: FIN
 
+// MOD-007: GENERAR EXCEL [INICIO]
 function generarExcel() {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
@@ -448,11 +454,9 @@ function generarExcel() {
     };
   }
 }
+// MOD-007: FIN
 
-// ========================================
-// FUNCIONES DE ESTADO
-// ========================================
-
+// MOD-008: OBTENER REGISTROS PENDIENTES [INICIO]
 function obtenerRegistrosPendientes() {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
@@ -530,7 +534,9 @@ function obtenerRegistrosPendientes() {
     };
   }
 }
+// MOD-008: FIN
 
+// MOD-009: MARCAR COMO PAGADO [INICIO]
 function marcarComoPagado(fechas) {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
@@ -570,11 +576,9 @@ function marcarComoPagado(fechas) {
     };
   }
 }
+// MOD-009: FIN
 
-// ========================================
-// FUNCIONES AUXILIARES
-// ========================================
-
+// MOD-010: FUNCIONES AUXILIARES TEXTO [INICIO]
 function generarTextoLlegada(fecha) {
   const dias = ['do', 'lu', 'ma', 'mi', 'ju', 'vi', 'sa'];
   const dia = dias[fecha.getDay()];
@@ -592,7 +596,9 @@ function generarTextoSalida(fecha) {
   
   return `Salida ${dia} ${ddmm}, ${hhmm}`;
 }
+// MOD-010: FIN
 
+// MOD-011: FUNCIONES AUXILIARES CÁLCULO [INICIO]
 function calcularHorasTrabajadas(horaLlegada, horaSalida) {
   const llegada = convertirAMinutos(horaLlegada);
   const salida = convertirAMinutos(horaSalida);
@@ -611,7 +617,9 @@ function convertirAMinutos(hora) {
     return h * 60 + m;
   }
 }
+// MOD-011: FIN
 
+// MOD-012: FUNCIONES AUXILIARES SEMANA [INICIO]
 function obtenerInicioSemana(fecha) {
   const dia = fecha.getDay();
   const diff = dia === 0 ? -6 : 1 - dia; // Lunes como inicio
@@ -627,7 +635,9 @@ function obtenerFinSemana(fecha) {
   fin.setDate(inicio.getDate() + 6); // Domingo
   return fin;
 }
+// MOD-012: FIN
 
+// MOD-013: FUNCIONES AUXILIARES FORMATO [INICIO]
 function formatearFechaSemana(fecha) {
   const dias = ['do', 'lu', 'ma', 'mi', 'ju', 've', 'sa'];
   const dia = dias[fecha.getDay()];
@@ -653,15 +663,9 @@ function obtenerFechaCompleta(fecha) {
   const ddmm = Utilities.formatDate(fecha, Session.getScriptTimeZone(), 'dd/MM');
   return `${dia}, ${ddmm}`;
 }
+// MOD-013: FIN
 
-// ========================================
-// BATERÍA DE PRUEBAS UNIFICADA
-// ========================================
-
-/**
- * Función principal de pruebas - Ejecuta todas las pruebas del sistema
- * Para ejecutar: Selecciona "testTotal" en el menú de funciones y haz clic en ▶️
- */
+// MOD-014: BATERÍA DE PRUEBAS [INICIO]
 function testTotal() {
   Logger.clear();
   Logger.log('═══════════════════════════════════════════════════════');
@@ -905,14 +909,9 @@ function testTotal() {
   
   Logger.log('\n📌 Revisa los logs completos en: Ver > Registros (Ctrl/Cmd + Enter)');
 }
+// MOD-014: FIN
 
-// ========================================
-// MENÚ PERSONALIZADO
-// ========================================
-
-/**
- * Menú personalizado al abrir el Spreadsheet
- */
+// MOD-015: MENÚ PERSONALIZADO [INICIO]
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('⚙️ Actualizar')
@@ -921,18 +920,9 @@ function onOpen() {
     .addItem('📊 Ejecutar todas las pruebas', 'testTotal')
     .addToUi();
 }
+// MOD-015: FIN
 
-// ========================================
-// FUNCIONES ADMINISTRATIVAS
-// ========================================
-
-/**
- * Completa TextoLlegada (D), TextoSalida (E), Horas (F) y Monto (G)
- * solo si están vacíos y existen los datos base.
- * 
- * Uso: Cuando llenas manualmente fechas y horas en el Sheet
- * y necesitas generar los textos y cálculos automáticamente.
- */
+// MOD-016: REFRESH TEXTOS [INICIO]
 function refreshTextos() {
   try {
     const ss = SpreadsheetApp.openById(SHEET_ID);
@@ -1108,3 +1098,20 @@ function refreshTextos() {
     );
   }
 }
+// MOD-016: FIN
+
+// MOD-099: NOTAS [INICIO]
+/*
+DESCRIPCIÓN:
+Sistema de asistencia para registro de entrada/salida con generación de reportes
+y seguimiento de pagos. Permite registrar llegada/salida, generar reportes para
+WhatsApp, exportar a Excel y gestionar estados de pago.
+
+DEPENDENCIAS:
+- MOD-003 y MOD-004: Usan funciones auxiliares de MOD-010, MOD-011
+- MOD-006 y MOD-007: Usan funciones de MOD-011, MOD-012, MOD-013
+- MOD-008: Usa funciones de MOD-011, MOD-012, MOD-013
+- MOD-014: Usa todas las funciones principales para pruebas
+- MOD-016: Usa funciones de MOD-010 y MOD-011
+*/
+// MOD-099: FIN
